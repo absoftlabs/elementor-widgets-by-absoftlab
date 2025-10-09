@@ -1,0 +1,834 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+use Elementor\Widget_Base;
+use Elementor\Controls_Manager;
+use Elementor\Group_Control_Typography;
+use Elementor\Group_Control_Background;
+use Elementor\Group_Control_Border;
+use Elementor\Group_Control_Box_Shadow;
+
+class ABSL_Info_Card_Widget extends Widget_Base {
+    public function get_name() { return 'absl_info_card'; }
+    public function get_title() { return 'ABSL Info Card'; }
+    public function get_icon() { return 'eicon-info-box'; }
+    public function get_categories() { return ['absoftlab','general']; }
+
+    protected function register_controls() {
+
+        /* -----------------------
+         * CONTENT
+         * ---------------------*/
+        $this->start_controls_section('content_section', [
+            'label' => __('Content', 'absl-ew')
+        ]);
+
+        // NEW: Media Type (Icon or Image)
+        $this->add_control('media_type', [
+            'label'   => __('Media Type', 'absl-ew'),
+            'type'    => Controls_Manager::SELECT,
+            'default' => 'icon',
+            'options' => [
+                'icon'  => __('Icon', 'absl-ew'),
+                'image' => __('Image', 'absl-ew'),
+            ],
+        ]);
+
+        // ICON (only visible if media_type = icon)
+        $this->add_control('icon', [
+            'label' => __('Icon', 'absl-ew'),
+            'type'  => Controls_Manager::ICONS,
+            'default' => [
+                'value' => 'fas fa-star',
+                'library' => 'fa-solid',
+            ],
+            'condition' => ['media_type' => 'icon'],
+        ]);
+
+        // IMAGE (only visible if media_type = image)
+        $this->add_control('image', [
+            'label'   => __('Image', 'absl-ew'),
+            'type'    => Controls_Manager::MEDIA,
+            'default' => ['url' => \Elementor\Utils::get_placeholder_image_src()],
+            'condition' => ['media_type' => 'image'],
+        ]);
+        $this->add_control('image_alt', [
+            'label' => __('Image Alt Text', 'absl-ew'),
+            'type'  => Controls_Manager::TEXT,
+            'placeholder' => __('Describe the image…', 'absl-ew'),
+            'condition' => ['media_type' => 'image'],
+        ]);
+
+        $this->add_control('title', [
+            'label' => __('Title', 'absl-ew'),
+            'type'  => Controls_Manager::TEXT,
+            'default' => __('Card Title', 'absl-ew')
+        ]);
+
+        // Subtitle
+        $this->add_control('subtitle', [
+            'label' => __('Subtitle', 'absl-ew'),
+            'type'  => Controls_Manager::TEXT,
+            'default' => __('Card Subtitle', 'absl-ew'),
+            'placeholder' => __('Enter subtitle...', 'absl-ew'),
+        ]);
+
+        $this->add_control('description', [
+            'label' => __('Description', 'absl-ew'),
+            'type'  => Controls_Manager::TEXTAREA,
+            'default' => __('This is a sample description text.', 'absl-ew')
+        ]);
+
+        // Media Position (works for both icon & image)
+        $this->add_responsive_control('icon_position', [
+            'label'   => __('Media Position', 'absl-ew'),
+            'type'    => Controls_Manager::CHOOSE,
+            'options' => [
+                'top'   => ['title' => __('Top', 'absl-ew'),   'icon' => 'eicon-v-align-top'],
+                'left'  => ['title' => __('Left', 'absl-ew'),  'icon' => 'eicon-h-align-left'],
+                'right' => ['title' => __('Right', 'absl-ew'), 'icon' => 'eicon-h-align-right'],
+            ],
+            'default' => 'top',
+            'toggle'  => true,
+        ]);
+
+        // Icon View: Default / Stacked / Framed (only for icon)
+        $this->add_control('icon_view', [
+            'label'   => __('Icon View', 'absl-ew'),
+            'type'    => Controls_Manager::SELECT,
+            'default' => 'default',
+            'options' => [
+                'default' => __('Default', 'absl-ew'),
+                'stacked' => __('Stacked', 'absl-ew'),
+                'framed'  => __('Framed', 'absl-ew'),
+            ],
+            'condition' => ['media_type' => 'icon'],
+        ]);
+
+        // Icon Shape (only for icon & non-default view)
+        $this->add_control('icon_shape', [
+            'label'   => __('Icon Shape', 'absl-ew'),
+            'type'    => Controls_Manager::SELECT,
+            'default' => 'rounded',
+            'options' => [
+                'square'  => __('Square', 'absl-ew'),
+                'circle'  => __('Circle', 'absl-ew'),
+                'rounded' => __('Rounded', 'absl-ew'),
+            ],
+            'condition' => [
+                'media_type' => 'icon',
+                'icon_view!' => 'default',
+            ],
+        ]);
+
+        /* ------------ CTA / BUTTON (CONTENT) ------------ */
+        $this->add_control('show_button', [
+            'label'        => __('Show Button (CTA)', 'absl-ew'),
+            'type'         => Controls_Manager::SWITCHER,
+            'label_on'     => __('Show', 'absl-ew'),
+            'label_off'    => __('Hide', 'absl-ew'),
+            'return_value' => 'yes',
+            'default'      => 'yes',
+            'separator'    => 'before',
+        ]);
+
+        $this->add_control('button_text', [
+            'label'     => __('Button Label', 'absl-ew'),
+            'type'      => Controls_Manager::TEXT,
+            'default'   => __('Learn More', 'absl-ew'),
+            'condition' => ['show_button' => 'yes'],
+        ]);
+
+        $this->add_control('button_link', [
+            'label'       => __('Button Link', 'absl-ew'),
+            'type'        => Controls_Manager::URL,
+            'placeholder' => __('https://your-link.com', 'absl-ew'),
+            'options'     => ['url', 'is_external', 'nofollow'],
+            'default'     => [
+                'url' => '#',
+                'is_external' => false,
+                'nofollow'    => false,
+            ],
+            'condition'   => ['show_button' => 'yes'],
+        ]);
+
+        $this->end_controls_section();
+
+        /* -----------------------
+         * STYLE: CARD
+         * ---------------------*/
+        $this->start_controls_section('card_style', [
+            'label' => __('Card', 'absl-ew'),
+            'tab'   => Controls_Manager::TAB_STYLE,
+        ]);
+
+        $this->add_group_control(Group_Control_Background::get_type(), [
+            'name'     => 'card_bg',
+            'label'    => __('Normal Background', 'absl-ew'),
+            'selector' => '{{WRAPPER}} .absl-card',
+        ]);
+
+        $this->add_group_control(Group_Control_Background::get_type(), [
+            'name'     => 'card_hover_bg',
+            'label'    => __('Hover Background', 'absl-ew'),
+            'selector' => '{{WRAPPER}} .absl-card:hover',
+        ]);
+
+        $this->add_group_control(Group_Control_Border::get_type(), [
+            'name'     => 'card_border',
+            'selector' => '{{WRAPPER}} .absl-card',
+        ]);
+
+        $this->add_responsive_control('card_radius', [
+            'label' => __('Border Radius', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px', '%'],
+            'range' => ['px' => ['min'=>0, 'max'=>60], '%'=>['min'=>0, 'max'=>50]],
+            'selectors' => ['{{WRAPPER}} .absl-card' => 'border-radius: {{SIZE}}{{UNIT}};'],
+        ]);
+
+        $this->add_group_control(Group_Control_Box_Shadow::get_type(), [
+            'name'     => 'card_shadow',
+            'selector' => '{{WRAPPER}} .absl-card',
+        ]);
+
+        $this->add_responsive_control('card_padding', [
+            'label' => __('Padding', 'absl-ew'),
+            'type'  => Controls_Manager::DIMENSIONS,
+            'size_units' => ['px','em','%'],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+            ],
+        ]);
+
+        // Content Alignment (Media + Title + Subtitle + Description + Button)
+        $this->add_responsive_control('content_align', [
+            'label'   => __('Content Alignment', 'absl-ew'),
+            'type'    => Controls_Manager::CHOOSE,
+            'options' => [
+                'left'   => ['title'=>__('Left','absl-ew'),   'icon'=>'eicon-text-align-left'],
+                'center' => ['title'=>__('Center','absl-ew'), 'icon'=>'eicon-text-align-center'],
+                'right'  => ['title'=>__('Right','absl-ew'),  'icon'=>'eicon-text-align-right'],
+                'justify'=> ['title'=>__('Justify','absl-ew'),'icon'=>'eicon-text-align-justify'],
+            ],
+            'default' => 'center',
+            'selectors' => [
+                '{{WRAPPER}} .absl-card' => 'text-align: {{VALUE}};',
+                '{{WRAPPER}} .absl-card p' => 'text-align: {{VALUE}};',
+                '{{WRAPPER}} .absl-card .absl-subtitle' => 'text-align: {{VALUE}};',
+                '{{WRAPPER}} .absl-card.pos-top .absl-top' => 'justify-content: {{VALUE}};',
+                '{{WRAPPER}} .absl-card.pos-left .absl-inner, {{WRAPPER}} .absl-card.pos-right .absl-inner' => 'justify-content: {{VALUE}};',
+            ],
+            'render_type' => 'ui',
+        ]);
+
+        /* ===== Height Controls ===== */
+        $this->add_responsive_control('equal_height', [
+            'label' => __('Equal Height (match row)', 'absl-ew'),
+            'type'  => Controls_Manager::SWITCHER,
+            'label_on'  => __('On', 'absl-ew'),
+            'label_off' => __('Off', 'absl-ew'),
+            'return_value' => 'yes',
+            'default' => 'yes',
+            'selectors' => [
+                '{{WRAPPER}}' => 'height:100%;',
+                '{{WRAPPER}} .elementor-widget-container' => 'height:100%; display:flex;',
+                '{{WRAPPER}} .elementor-widget-container > .absl-card' => 'height:100%; flex:1 1 auto;',
+            ],
+        ]);
+
+        $this->add_control('height_mode', [
+            'label'   => __('Height Mode', 'absl-ew'),
+            'type'    => Controls_Manager::SELECT,
+            'default' => 'auto',
+            'options' => [
+                'auto'  => __('Auto', 'absl-ew'),
+                'min'   => __('Min Height', 'absl-ew'),
+                'fixed' => __('Fixed Height', 'absl-ew'),
+            ],
+        ]);
+
+        $this->add_responsive_control('card_min_height', [
+            'label' => __('Min Height', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px','vh'],
+            'range' => [
+                'px' => ['min'=>100, 'max'=>1000],
+                'vh' => ['min'=>10, 'max'=>100],
+            ],
+            'condition' => ['height_mode' => 'min'],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card' => 'min-height: {{SIZE}}{{UNIT}};',
+            ],
+        ]);
+
+        $this->add_responsive_control('card_fixed_height', [
+            'label' => __('Fixed Height', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px','vh'],
+            'range' => [
+                'px' => ['min'=>120, 'max'=>1200],
+                'vh' => ['min'=>10, 'max'=>100],
+            ],
+            'condition' => ['height_mode' => 'fixed'],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card' => 'height: {{SIZE}}{{UNIT}}; overflow:hidden;',
+            ],
+        ]);
+
+        // Vertical alignment inside card (works because card is flex-column)
+        $this->add_responsive_control('content_vertical_align', [
+            'label'   => __('Vertical Align (inside card)', 'absl-ew'),
+            'type'    => Controls_Manager::CHOOSE,
+            'options' => [
+                'flex-start' => ['title'=>__('Top','absl-ew'),    'icon'=>'eicon-v-align-top'],
+                'center'     => ['title'=>__('Center','absl-ew'), 'icon'=>'eicon-v-align-middle'],
+                'flex-end'   => ['title'=>__('Bottom','absl-ew'), 'icon'=>'eicon-v-align-bottom'],
+            ],
+            'default' => 'flex-start',
+            'selectors' => [
+                '{{WRAPPER}} .absl-card' => 'justify-content: {{VALUE}};',
+            ],
+        ]);
+
+        $this->end_controls_section();
+
+        /* -----------------------
+         * STYLE: ICON (only if media_type = icon)
+         * ---------------------*/
+        $this->start_controls_section('icon_style', [
+            'label' => __('Icon', 'absl-ew'),
+            'tab'   => Controls_Manager::TAB_STYLE,
+            'condition' => ['media_type' => 'icon'],
+        ]);
+
+        // Icon Size
+        $this->add_responsive_control('icon_size', [
+            'label' => __('Icon Size', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px'],
+            'range' => ['px' => ['min'=>10, 'max'=>200]],
+            'default' => ['size'=>48, 'unit'=>'px'],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-icon i' => 'font-size: {{SIZE}}{{UNIT}};',
+                '{{WRAPPER}} .absl-card .absl-icon svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+            ],
+        ]);
+
+        // Icon Container Size (for stacked/framed)
+        $this->add_responsive_control('icon_box_size', [
+            'label' => __('Icon Box Size', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px'],
+            'range' => ['px' => ['min'=>20, 'max'=>260]],
+            'default' => ['size'=>80, 'unit'=>'px'],
+            'condition' => ['icon_view!' => 'default'],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-icon.is-box' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}}; min-width: {{SIZE}}{{UNIT}}; line-height: {{SIZE}}{{UNIT}};',
+            ],
+        ]);
+
+        // Icon Colors
+        $this->add_control('icon_color', [
+            'label' => __('Icon Color', 'absl-ew'),
+            'type'  => Controls_Manager::COLOR,
+            'selectors' => ['{{WRAPPER}} .absl-card .absl-icon i, {{WRAPPER}} .absl-card .absl-icon svg' => 'color: {{VALUE}}; fill: {{VALUE}};']
+        ]);
+        $this->add_control('icon_hover_color', [
+            'label' => __('Icon Hover Color', 'absl-ew'),
+            'type'  => Controls_Manager::COLOR,
+            'selectors' => ['{{WRAPPER}} .absl-card:hover .absl-icon i, {{WRAPPER}} .absl-card:hover .absl-icon svg' => 'color: {{VALUE}}; fill: {{VALUE}};']
+        ]);
+
+        // Icon Background (ONLY for Stacked)
+        $this->add_group_control(Group_Control_Background::get_type(), [
+            'name'     => 'icon_bg',
+            'label'    => __('Icon Background (Normal)', 'absl-ew'),
+            'selector' => '{{WRAPPER}} .absl-card .absl-icon.is-stacked',
+            'condition'=> ['icon_view' => 'stacked'],
+        ]);
+        $this->add_group_control(Group_Control_Background::get_type(), [
+            'name'     => 'icon_bg_hover',
+            'label'    => __('Icon Background (Hover)', 'absl-ew'),
+            'selector' => '{{WRAPPER}} .absl-card:hover .absl-icon.is-stacked',
+            'condition'=> ['icon_view' => 'stacked'],
+        ]);
+
+        // Framed border (ONLY for Framed)
+        $this->add_group_control(Group_Control_Border::get_type(), [
+            'name'     => 'icon_frame_border',
+            'selector' => '{{WRAPPER}} .absl-card .absl-icon.is-framed',
+            'condition'=> ['icon_view' => 'framed'],
+        ]);
+
+        // Icon corner override (applies to both stacked & framed)
+        $this->add_responsive_control('icon_radius_custom', [
+            'label' => __('Icon Radius (override shape)', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px', '%'],
+            'range' => ['px' => ['min'=>0,'max'=>100], '%'=>['min'=>0,'max'=>50]],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-icon.is-box' => 'border-radius: {{SIZE}}{{UNIT}};',
+            ],
+            'description' => __('If set, this will override the shape preset.', 'absl-ew'),
+            'condition'=> ['icon_view!' => 'default'],
+        ]);
+
+        // Spacing between media and text
+        $this->add_responsive_control('icon_spacing', [
+            'label' => __('Icon Spacing', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px','em'],
+            'range' => ['px'=>['min'=>0,'max'=>100],'em'=>['min'=>0,'max'=>6]],
+            'default' => ['size'=>16,'unit'=>'px'],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card.pos-top .absl-top'     => 'gap: {{SIZE}}{{UNIT}};',
+                '{{WRAPPER}} .absl-card.pos-left .absl-inner'  => 'gap: {{SIZE}}{{UNIT}};',
+                '{{WRAPPER}} .absl-card.pos-right .absl-inner' => 'gap: {{SIZE}}{{UNIT}};',
+            ],
+        ]);
+
+        $this->end_controls_section();
+
+        /* -----------------------
+         * STYLE: IMAGE (only if media_type = image)
+         * ---------------------*/
+        $this->start_controls_section('image_style', [
+            'label' => __('Image', 'absl-ew'),
+            'tab'   => Controls_Manager::TAB_STYLE,
+            'condition' => ['media_type' => 'image'],
+        ]);
+
+        $this->add_responsive_control('image_width', [
+            'label' => __('Width', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px','%','vw'],
+            'range' => [
+                'px'=>['min'=>20,'max'=>600],
+                '%'=>['min'=>10,'max'=>100],
+                'vw'=>['min'=>5,'max'=>100],
+            ],
+            'default' => ['size'=>80,'unit'=>'px'],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-media img' => 'width: {{SIZE}}{{UNIT}};',
+            ],
+        ]);
+
+        $this->add_responsive_control('image_height', [
+            'label' => __('Height', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px'],
+            'range' => ['px'=>['min'=>20,'max'=>600]],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-media img' => 'height: {{SIZE}}{{UNIT}};',
+            ],
+        ]);
+
+        $this->add_control('image_object_fit', [
+            'label' => __('Object Fit', 'absl-ew'),
+            'type'  => Controls_Manager::SELECT,
+            'default' => 'cover',
+            'options' => [
+                'cover'   => __('Cover', 'absl-ew'),
+                'contain' => __('Contain', 'absl-ew'),
+                'fill'    => __('Fill', 'absl-ew'),
+                'none'    => __('None', 'absl-ew'),
+                'scale-down' => __('Scale Down', 'absl-ew'),
+            ],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-media img' => 'object-fit: {{VALUE}};',
+            ],
+        ]);
+
+        $this->add_responsive_control('image_radius', [
+            'label' => __('Border Radius', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px','%'],
+            'range' => ['px'=>['min'=>0,'max'=>100], '%'=>['min'=>0,'max'=>50]],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-media img' => 'border-radius: {{SIZE}}{{UNIT}};',
+            ],
+        ]);
+
+        $this->add_group_control(Group_Control_Border::get_type(), [
+            'name'     => 'image_border',
+            'selector' => '{{WRAPPER}} .absl-card .absl-media img',
+        ]);
+
+        $this->add_group_control(Group_Control_Box_Shadow::get_type(), [
+            'name'     => 'image_shadow',
+            'selector' => '{{WRAPPER}} .absl-card .absl-media img',
+        ]);
+
+        // Spacing between media and text (image)
+        $this->add_responsive_control('image_spacing', [
+            'label' => __('Image Spacing', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px','em'],
+            'range' => ['px'=>['min'=>0,'max'=>100],'em'=>['min'=>0,'max'=>6]],
+            'default' => ['size'=>16,'unit'=>'px'],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card.pos-top .absl-top'     => 'gap: {{SIZE}}{{UNIT}};',
+                '{{WRAPPER}} .absl-card.pos-left .absl-inner'  => 'gap: {{SIZE}}{{UNIT}};',
+                '{{WRAPPER}} .absl-card.pos-right .absl-inner' => 'gap: {{SIZE}}{{UNIT}};',
+            ],
+        ]);
+
+        $this->end_controls_section();
+
+        /* -----------------------
+         * STYLE: TITLE
+         * ---------------------*/
+        $this->start_controls_section('title_style', [
+            'label' => __('Title', 'absl-ew'),
+            'tab'   => Controls_Manager::TAB_STYLE,
+        ]);
+        $this->add_control('title_color', [
+            'label' => __('Color', 'absl-ew'),
+            'type'  => Controls_Manager::COLOR,
+            'selectors' => ['{{WRAPPER}} .absl-card h3' => 'color: {{VALUE}};']
+        ]);
+        $this->add_control('title_hover_color', [
+            'label' => __('Hover Color', 'absl-ew'),
+            'type'  => Controls_Manager::COLOR,
+            'selectors' => ['{{WRAPPER}} .absl-card:hover h3' => 'color: {{VALUE}};']
+        ]);
+        $this->add_group_control(Group_Control_Typography::get_type(), [
+            'name'     => 'title_typo',
+            'selector' => '{{WRAPPER}} .absl-card h3',
+        ]);
+        // spacing Title ↔ Description (subtitle has own margin)
+        $this->add_responsive_control('content_spacing', [
+            'label' => __('Content Spacing (Title ↔ Description)', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px','em'],
+            'range' => ['px'=>['min'=>0,'max'=>60],'em'=>['min'=>0,'max'=>6]],
+            'default' => ['size'=>8,'unit'=>'px'],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card h3' => 'margin-bottom: {{SIZE}}{{UNIT}};',
+            ],
+        ]);
+        $this->end_controls_section();
+
+        /* -----------------------
+         * STYLE: SUBTITLE
+         * ---------------------*/
+        $this->start_controls_section('subtitle_style', [
+            'label' => __('Subtitle', 'absl-ew'),
+            'tab'   => Controls_Manager::TAB_STYLE,
+        ]);
+        $this->add_control('subtitle_color', [
+            'label' => __('Color', 'absl-ew'),
+            'type'  => Controls_Manager::COLOR,
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-subtitle' => 'color: {{VALUE}};',
+            ],
+        ]);
+        $this->add_control('subtitle_hover_color', [
+            'label' => __('Hover Color', 'absl-ew'),
+            'type'  => Controls_Manager::COLOR,
+            'selectors' => [
+                '{{WRAPPER}} .absl-card:hover .absl-subtitle' => 'color: {{VALUE}};',
+            ],
+        ]);
+        $this->add_group_control(Group_Control_Typography::get_type(), [
+            'name'     => 'subtitle_typo',
+            'selector' => '{{WRAPPER}} .absl-card .absl-subtitle',
+        ]);
+        $this->add_responsive_control('subtitle_spacing_bottom', [
+            'label' => __('Subtitle Bottom Spacing', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px','em'],
+            'range' => ['px'=>['min'=>0,'max'=>40],'em'=>['min'=>0,'max'=>4]],
+            'default' => ['size'=>10,'unit'=>'px'],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-subtitle' => 'margin-bottom: {{SIZE}}{{UNIT}};',
+            ],
+        ]);
+        $this->end_controls_section();
+
+        /* -----------------------
+         * STYLE: DESCRIPTION
+         * ---------------------*/
+        $this->start_controls_section('desc_style', [
+            'label' => __('Description', 'absl-ew'),
+            'tab'   => Controls_Manager::TAB_STYLE,
+        ]);
+        $this->add_control('desc_color', [
+            'label' => __('Color', 'absl-ew'),
+            'type'  => Controls_Manager::COLOR,
+            'selectors' => ['{{WRAPPER}} .absl-card p' => 'color: {{VALUE}};']
+        ]);
+        $this->add_control('desc_hover_color', [
+            'label' => __('Hover Color', 'absl-ew'),
+            'type'  => Controls_Manager::COLOR,
+            'selectors' => ['{{WRAPPER}} .absl-card:hover p' => 'color: {{VALUE}};']
+        ]);
+        $this->add_group_control(Group_Control_Typography::get_type(), [
+            'name'     => 'desc_typo',
+            'selector' => '{{WRAPPER}} .absl-card p',
+        ]);
+        $this->end_controls_section();
+
+        /* -----------------------
+         * STYLE: BUTTON (CTA)
+         * ---------------------*/
+        $this->start_controls_section('button_style', [
+            'label' => __('Button (CTA)', 'absl-ew'),
+            'tab'   => Controls_Manager::TAB_STYLE,
+            'condition' => ['show_button' => 'yes'],
+        ]);
+
+        // Alignment (+ Full Width option)
+        $this->add_responsive_control('button_alignment', [
+            'label' => __('Button Alignment', 'absl-ew'),
+            'type'  => Controls_Manager::CHOOSE,
+            'options' => [
+                'flex-start' => ['title'=>__('Left','absl-ew'),'icon'=>'eicon-h-align-left'],
+                'center'     => ['title'=>__('Center','absl-ew'),'icon'=>'eicon-h-align-center'],
+                'flex-end'   => ['title'=>__('Right','absl-ew'),'icon'=>'eicon-h-align-right'],
+            ],
+            'default' => 'center',
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-btn-wrap' => 'justify-content: {{VALUE}};',
+            ],
+        ]);
+
+        $this->add_control('button_full_width', [
+            'label'        => __('Full Width', 'absl-ew'),
+            'type'         => Controls_Manager::SWITCHER,
+            'return_value' => 'yes',
+            'default'      => '',
+        ]);
+
+        $this->add_responsive_control('button_top_spacing', [
+            'label' => __('Top Spacing', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px','em'],
+            'range' => ['px'=>['min'=>0,'max'=>60],'em'=>['min'=>0,'max'=>6]],
+            'default' => ['size'=>16,'unit'=>'px'],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-btn-wrap' => 'margin-top: {{SIZE}}{{UNIT}};',
+            ],
+        ]);
+
+        // Typography
+        $this->add_group_control(Group_Control_Typography::get_type(), [
+            'name'     => 'button_typo',
+            'selector' => '{{WRAPPER}} .absl-card .absl-btn',
+        ]);
+
+        // NORMAL
+        $this->add_control('button_heading_normal', [
+            'type' => Controls_Manager::HEADING,
+            'label' => __('Normal', 'absl-ew'),
+            'separator' => 'before',
+        ]);
+        $this->add_control('button_text_color', [
+            'label' => __('Text Color', 'absl-ew'),
+            'type'  => Controls_Manager::COLOR,
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-btn' => 'color: {{VALUE}};',
+            ],
+        ]);
+        $this->add_group_control(Group_Control_Background::get_type(), [
+            'name'     => 'button_bg',
+            'label'    => __('Background', 'absl-ew'),
+            'selector' => '{{WRAPPER}} .absl-card .absl-btn',
+        ]);
+        $this->add_group_control(Group_Control_Border::get_type(), [
+            'name'     => 'button_border',
+            'selector' => '{{WRAPPER}} .absl-card .absl-btn',
+        ]);
+        $this->add_responsive_control('button_radius', [
+            'label' => __('Border Radius', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px','%'],
+            'range' => ['px'=>['min'=>0,'max'=>60], '%'=>['min'=>0,'max'=>50]],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-btn' => 'border-radius: {{SIZE}}{{UNIT}};',
+            ],
+        ]);
+        $this->add_responsive_control('button_padding', [
+            'label' => __('Padding', 'absl-ew'),
+            'type'  => Controls_Manager::DIMENSIONS,
+            'size_units' => ['px','em'],
+            'default' => ['top'=>12,'right'=>20,'bottom'=>12,'left'=>20,'unit'=>'px'],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-btn' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+            ],
+        ]);
+        $this->add_group_control(Group_Control_Box_Shadow::get_type(), [
+            'name'     => 'button_shadow',
+            'selector' => '{{WRAPPER}} .absl-card .absl-btn',
+        ]);
+
+        // HOVER
+        $this->add_control('button_heading_hover', [
+            'type' => Controls_Manager::HEADING,
+            'label' => __('Hover', 'absl-ew'),
+            'separator' => 'before',
+        ]);
+        $this->add_control('button_text_color_hover', [
+            'label' => __('Text Color (Hover)', 'absl-ew'),
+            'type'  => Controls_Manager::COLOR,
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-btn:hover' => 'color: {{VALUE}};',
+            ],
+        ]);
+        $this->add_group_control(Group_Control_Background::get_type(), [
+            'name'     => 'button_bg_hover',
+            'label'    => __('Background (Hover)', 'absl-ew'),
+            'selector' => '{{WRAPPER}} .absl-card .absl-btn:hover',
+        ]);
+        $this->add_group_control(Group_Control_Border::get_type(), [
+            'name'     => 'button_border_hover',
+            'selector' => '{{WRAPPER}} .absl-card .absl-btn:hover',
+        ]);
+        $this->add_group_control(Group_Control_Box_Shadow::get_type(), [
+            'name'     => 'button_shadow_hover',
+            'selector' => '{{WRAPPER}} .absl-card .absl-btn:hover',
+        ]);
+
+        $this->end_controls_section();
+    }
+
+    protected function render() {
+        $s = $this->get_settings_for_display();
+
+        // Classes for icon view & shape (only for icon)
+        $shape_cls  = '';
+        if ( isset($s['media_type']) && $s['media_type'] === 'icon' && $s['icon_view'] !== 'default' ) {
+            if ( $s['icon_shape'] === 'circle' )      $shape_cls = 'shape-circle';
+            elseif ( $s['icon_shape'] === 'square' )  $shape_cls = 'shape-square';
+            else                                       $shape_cls = 'shape-rounded';
+        }
+
+        $view_cls = '';
+        if ( isset($s['media_type']) && $s['media_type'] === 'icon' ) {
+            if ( $s['icon_view'] === 'stacked' )      $view_cls = 'is-box is-stacked';
+            elseif ( $s['icon_view'] === 'framed' )   $view_cls = 'is-box is-framed';
+        }
+
+        $pos = $s['icon_position'] ?: 'top';
+        $pos_cls = in_array($pos, ['left','right']) ? "pos-$pos" : 'pos-top';
+
+        // Button link attrs
+        $btn_url   = isset($s['button_link']['url']) ? esc_url($s['button_link']['url']) : '#';
+        $btn_target= !empty($s['button_link']['is_external']) ? ' target="_blank"' : '';
+        $btn_rel   = [];
+        if (!empty($s['button_link']['nofollow'])) $btn_rel[] = 'nofollow';
+        if (!empty($s['button_link']['is_external'])) $btn_rel[] = 'noopener noreferrer';
+        $btn_rel_attr = $btn_rel ? ' rel="'.esc_attr(implode(' ', $btn_rel)).'"' : '';
+
+        $full_width = (!empty($s['button_full_width']) && $s['button_full_width'] === 'yes') ? ' is-full' : '';
+
+        // Helper: render media (icon or image)
+        ob_start();
+        if ( isset($s['media_type']) && $s['media_type'] === 'image' && !empty($s['image']['url']) ) {
+            $alt = !empty($s['image_alt']) ? esc_attr($s['image_alt']) : '';
+            echo '<span class="absl-media"><img src="'.esc_url($s['image']['url']).'" alt="'.$alt.'"></span>';
+        } else {
+            echo '<span class="absl-icon '.esc_attr($view_cls.' '.$shape_cls).'">';
+            \Elementor\Icons_Manager::render_icon($s['icon'], ['aria-hidden' => 'true']);
+            echo '</span>';
+        }
+        $media_html = ob_get_clean();
+
+        ?>
+        <div class="absl-card <?php echo esc_attr($pos_cls); ?>">
+            <?php if ($pos === 'top'): ?>
+                <div class="absl-top">
+                    <?php echo $media_html; ?>
+                </div>
+                <div class="absl-content">
+                    <h3><?php echo esc_html($s['title']); ?></h3>
+                    <?php if ( ! empty( $s['subtitle'] ) ) : ?>
+                        <div class="absl-subtitle"><?php echo esc_html($s['subtitle']); ?></div>
+                    <?php endif; ?>
+                    <p><?php echo esc_html($s['description']); ?></p>
+
+                    <?php if ( !empty($s['show_button']) && $s['show_button'] === 'yes' && !empty($s['button_text']) ) : ?>
+                        <div class="absl-btn-wrap">
+                            <a class="absl-btn<?php echo esc_attr($full_width); ?>" href="<?php echo $btn_url; ?>"<?php echo $btn_target . $btn_rel_attr; ?>>
+                                <?php echo esc_html($s['button_text']); ?>
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php else: ?>
+                <div class="absl-inner">
+                    <?php if ($pos === 'left'): ?>
+                        <?php echo $media_html; ?>
+                    <?php endif; ?>
+
+                    <div class="absl-content">
+                        <h3><?php echo esc_html($s['title']); ?></h3>
+                        <?php if ( ! empty( $s['subtitle'] ) ) : ?>
+                            <div class="absl-subtitle"><?php echo esc_html($s['subtitle']); ?></div>
+                        <?php endif; ?>
+                        <p><?php echo esc_html($s['description']); ?></p>
+
+                        <?php if ( !empty($s['show_button']) && $s['show_button'] === 'yes' && !empty($s['button_text']) ) : ?>
+                            <div class="absl-btn-wrap">
+                                <a class="absl-btn<?php echo esc_attr($full_width); ?>" href="<?php echo $btn_url; ?>"<?php echo $btn_target . $btn_rel_attr; ?>>
+                                    <?php echo esc_html($s['button_text']); ?>
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if ($pos === 'right'): ?>
+                        <?php echo $media_html; ?>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <style>
+        /* Base card */
+        .absl-card{
+            transition:all .3s ease;
+            padding:30px; border-radius:15px;
+            text-align:center;
+            display:flex; flex-direction:column;
+        }
+        /* Media (icon/img) wrappers */
+        .absl-card .absl-icon,
+        .absl-card .absl-media{
+            display:inline-flex; align-items:center; justify-content:center; transition:all .3s ease;
+        }
+        .absl-card .absl-icon i,
+        .absl-card .absl-icon svg{ transition:all .3s ease; display:inline-block; }
+        .absl-card .absl-media img{ display:block; object-fit:cover; transition:all .3s ease; }
+
+        .absl-card h3{ font-weight:700; margin:0 0 6px 0; transition:all .3s ease; }
+        .absl-card .absl-subtitle{ margin:0 0 10px 0; opacity:.95; transition:all .3s ease; }
+        .absl-card p{ margin:0; line-height:1.6; transition:all .3s ease; }
+
+        /* Layout by position */
+        .absl-card.pos-top .absl-top{ display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:12px; }
+        .absl-card.pos-left .absl-inner,
+        .absl-card.pos-right .absl-inner{ display:flex; align-items:center; gap:16px; }
+        .absl-card.pos-right .absl-inner{ flex-direction:row-reverse; }
+
+        /* Let content area flex */
+        .absl-card .absl-content{ flex:1 1 auto; width:100%; }
+
+        /* Shape presets for boxed icon (Stacked/Framed) */
+        .absl-card .absl-icon.is-box.shape-circle{ border-radius:50%; }
+        .absl-card .absl-icon.is-box.shape-rounded{ border-radius:14px; }
+        .absl-card .absl-icon.is-box.shape-square{ border-radius:0; }
+
+        /* Button base */
+        .absl-card .absl-btn-wrap{ display:flex; justify-content:center; }
+        .absl-card .absl-btn{
+            display:inline-flex; align-items:center; justify-content:center;
+            text-decoration:none; cursor:pointer; transition:all .25s ease;
+            font-weight:600;
+        }
+        .absl-card .absl-btn.is-full{ width:100%; }
+        </style>
+        <?php
+    }
+}
