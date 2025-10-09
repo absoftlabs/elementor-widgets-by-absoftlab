@@ -23,7 +23,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             'label' => __('Content', 'absl-ew')
         ]);
 
-        // NEW: Media Type (Icon or Image)
+        // Media Type (Icon or Image)
         $this->add_control('media_type', [
             'label'   => __('Media Type', 'absl-ew'),
             'type'    => Controls_Manager::SELECT,
@@ -34,7 +34,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             ],
         ]);
 
-        // ICON (only visible if media_type = icon)
+        // ICON (only if media_type = icon)
         $this->add_control('icon', [
             'label' => __('Icon', 'absl-ew'),
             'type'  => Controls_Manager::ICONS,
@@ -45,7 +45,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             'condition' => ['media_type' => 'icon'],
         ]);
 
-        // IMAGE (only visible if media_type = image)
+        // IMAGE (only if media_type = image)
         $this->add_control('image', [
             'label'   => __('Image', 'absl-ew'),
             'type'    => Controls_Manager::MEDIA,
@@ -57,6 +57,75 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             'type'  => Controls_Manager::TEXT,
             'placeholder' => __('Describe the image…', 'absl-ew'),
             'condition' => ['media_type' => 'image'],
+        ]);
+
+        // Media position (works for both)
+        $this->add_responsive_control('icon_position', [
+            'label'   => __('Media Position', 'absl-ew'),
+            'type'    => Controls_Manager::CHOOSE,
+            'options' => [
+                'top'   => ['title' => __('Top', 'absl-ew'),   'icon' => 'eicon-v-align-top'],
+                'left'  => ['title' => __('Left', 'absl-ew'),  'icon' => 'eicon-h-align-left'],
+                'right' => ['title' => __('Right', 'absl-ew'), 'icon' => 'eicon-h-align-right'],
+            ],
+            'default' => 'top',
+            'toggle'  => true,
+        ]);
+
+        // Icon View
+        $this->add_control('icon_view', [
+            'label'   => __('Icon View', 'absl-ew'),
+            'type'    => Controls_Manager::SELECT,
+            'default' => 'default',
+            'options' => [
+                'default' => __('Default', 'absl-ew'),
+                'stacked' => __('Stacked', 'absl-ew'),
+                'framed'  => __('Framed', 'absl-ew'),
+            ],
+            'condition' => ['media_type' => 'icon'],
+        ]);
+        // Icon Shape
+        $this->add_control('icon_shape', [
+            'label'   => __('Icon Shape', 'absl-ew'),
+            'type'    => Controls_Manager::SELECT,
+            'default' => 'rounded',
+            'options' => [
+                'square'  => __('Square', 'absl-ew'),
+                'circle'  => __('Circle', 'absl-ew'),
+                'rounded' => __('Rounded', 'absl-ew'),
+            ],
+            'condition' => [
+                'media_type' => 'icon',
+                'icon_view!' => 'default',
+            ],
+        ]);
+
+        // IMAGE View (same feature-set as icon)
+        $this->add_control('image_view', [
+            'label'   => __('Image View', 'absl-ew'),
+            'type'    => Controls_Manager::SELECT,
+            'default' => 'default',
+            'options' => [
+                'default' => __('Default', 'absl-ew'),
+                'stacked' => __('Stacked (with BG)', 'absl-ew'),
+                'framed'  => __('Framed (with Border)', 'absl-ew'),
+            ],
+            'condition' => ['media_type' => 'image'],
+        ]);
+        // IMAGE Shape
+        $this->add_control('image_shape', [
+            'label'   => __('Image Shape', 'absl-ew'),
+            'type'    => Controls_Manager::SELECT,
+            'default' => 'rounded',
+            'options' => [
+                'square'  => __('Square', 'absl-ew'),
+                'circle'  => __('Circle', 'absl-ew'),
+                'rounded' => __('Rounded', 'absl-ew'),
+            ],
+            'condition' => [
+                'media_type' => 'image',
+                'image_view!' => 'default',
+            ],
         ]);
 
         $this->add_control('title', [
@@ -77,48 +146,6 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             'label' => __('Description', 'absl-ew'),
             'type'  => Controls_Manager::TEXTAREA,
             'default' => __('This is a sample description text.', 'absl-ew')
-        ]);
-
-        // Media Position (works for both icon & image)
-        $this->add_responsive_control('icon_position', [
-            'label'   => __('Media Position', 'absl-ew'),
-            'type'    => Controls_Manager::CHOOSE,
-            'options' => [
-                'top'   => ['title' => __('Top', 'absl-ew'),   'icon' => 'eicon-v-align-top'],
-                'left'  => ['title' => __('Left', 'absl-ew'),  'icon' => 'eicon-h-align-left'],
-                'right' => ['title' => __('Right', 'absl-ew'), 'icon' => 'eicon-h-align-right'],
-            ],
-            'default' => 'top',
-            'toggle'  => true,
-        ]);
-
-        // Icon View: Default / Stacked / Framed (only for icon)
-        $this->add_control('icon_view', [
-            'label'   => __('Icon View', 'absl-ew'),
-            'type'    => Controls_Manager::SELECT,
-            'default' => 'default',
-            'options' => [
-                'default' => __('Default', 'absl-ew'),
-                'stacked' => __('Stacked', 'absl-ew'),
-                'framed'  => __('Framed', 'absl-ew'),
-            ],
-            'condition' => ['media_type' => 'icon'],
-        ]);
-
-        // Icon Shape (only for icon & non-default view)
-        $this->add_control('icon_shape', [
-            'label'   => __('Icon Shape', 'absl-ew'),
-            'type'    => Controls_Manager::SELECT,
-            'default' => 'rounded',
-            'options' => [
-                'square'  => __('Square', 'absl-ew'),
-                'circle'  => __('Circle', 'absl-ew'),
-                'rounded' => __('Rounded', 'absl-ew'),
-            ],
-            'condition' => [
-                'media_type' => 'icon',
-                'icon_view!' => 'default',
-            ],
         ]);
 
         /* ------------ CTA / BUTTON (CONTENT) ------------ */
@@ -294,7 +321,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
         $this->end_controls_section();
 
         /* -----------------------
-         * STYLE: ICON (only if media_type = icon)
+         * STYLE: ICON (media_type = icon)
          * ---------------------*/
         $this->start_controls_section('icon_style', [
             'label' => __('Icon', 'absl-ew'),
@@ -315,7 +342,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             ],
         ]);
 
-        // Icon Container Size (for stacked/framed)
+        // Icon Box Size (stacked/framed)
         $this->add_responsive_control('icon_box_size', [
             'label' => __('Icon Box Size', 'absl-ew'),
             'type'  => Controls_Manager::SLIDER,
@@ -340,7 +367,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             'selectors' => ['{{WRAPPER}} .absl-card:hover .absl-icon i, {{WRAPPER}} .absl-card:hover .absl-icon svg' => 'color: {{VALUE}}; fill: {{VALUE}};']
         ]);
 
-        // Icon Background (ONLY for Stacked)
+        // Icon Background (Stacked)
         $this->add_group_control(Group_Control_Background::get_type(), [
             'name'     => 'icon_bg',
             'label'    => __('Icon Background (Normal)', 'absl-ew'),
@@ -354,14 +381,14 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             'condition'=> ['icon_view' => 'stacked'],
         ]);
 
-        // Framed border (ONLY for Framed)
+        // Framed border (Icon)
         $this->add_group_control(Group_Control_Border::get_type(), [
             'name'     => 'icon_frame_border',
             'selector' => '{{WRAPPER}} .absl-card .absl-icon.is-framed',
             'condition'=> ['icon_view' => 'framed'],
         ]);
 
-        // Icon corner override (applies to both stacked & framed)
+        // Icon corner override
         $this->add_responsive_control('icon_radius_custom', [
             'label' => __('Icon Radius (override shape)', 'absl-ew'),
             'type'  => Controls_Manager::SLIDER,
@@ -391,7 +418,8 @@ class ABSL_Info_Card_Widget extends Widget_Base {
         $this->end_controls_section();
 
         /* -----------------------
-         * STYLE: IMAGE (only if media_type = image)
+         * STYLE: IMAGE (media_type = image)
+         * আইকনের সব সেটিংসের সমমান Image এর জন্য
          * ---------------------*/
         $this->start_controls_section('image_style', [
             'label' => __('Image', 'absl-ew'),
@@ -399,31 +427,32 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             'condition' => ['media_type' => 'image'],
         ]);
 
-        $this->add_responsive_control('image_width', [
-            'label' => __('Width', 'absl-ew'),
-            'type'  => Controls_Manager::SLIDER,
-            'size_units' => ['px','%','vw'],
-            'range' => [
-                'px'=>['min'=>20,'max'=>600],
-                '%'=>['min'=>10,'max'=>100],
-                'vw'=>['min'=>5,'max'=>100],
-            ],
-            'default' => ['size'=>80,'unit'=>'px'],
-            'selectors' => [
-                '{{WRAPPER}} .absl-card .absl-media img' => 'width: {{SIZE}}{{UNIT}};',
-            ],
-        ]);
-
-        $this->add_responsive_control('image_height', [
-            'label' => __('Height', 'absl-ew'),
+        // Image Size (like icon_size)
+        $this->add_responsive_control('image_size', [
+            'label' => __('Image Size', 'absl-ew'),
             'type'  => Controls_Manager::SLIDER,
             'size_units' => ['px'],
-            'range' => ['px'=>['min'=>20,'max'=>600]],
+            'range' => ['px'=>['min'=>20,'max'=>260]],
+            'default' => ['size'=>80,'unit'=>'px'],
             'selectors' => [
-                '{{WRAPPER}} .absl-card .absl-media img' => 'height: {{SIZE}}{{UNIT}};',
+                '{{WRAPPER}} .absl-card .absl-media img' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
             ],
         ]);
 
+        // Image Box Size (for stacked/framed wrapper, same as icon_box_size)
+        $this->add_responsive_control('image_box_size', [
+            'label' => __('Image Box Size', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'size_units' => ['px'],
+            'range' => ['px'=>['min'=>20,'max'=>300]],
+            'default' => ['size'=>100,'unit'=>'px'],
+            'condition' => ['image_view!' => 'default'],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-media.is-box' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}}; min-width: {{SIZE}}{{UNIT}}; line-height: {{SIZE}}{{UNIT}};',
+            ],
+        ]);
+
+        // Image Object Fit (extra)
         $this->add_control('image_object_fit', [
             'label' => __('Object Fit', 'absl-ew'),
             'type'  => Controls_Manager::SELECT,
@@ -440,24 +469,38 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             ],
         ]);
 
-        $this->add_responsive_control('image_radius', [
-            'label' => __('Border Radius', 'absl-ew'),
+        // Background (ONLY for Stacked)
+        $this->add_group_control(Group_Control_Background::get_type(), [
+            'name'     => 'image_bg',
+            'label'    => __('Image Box Background (Normal)', 'absl-ew'),
+            'selector' => '{{WRAPPER}} .absl-card .absl-media.is-stacked',
+            'condition'=> ['image_view' => 'stacked'],
+        ]);
+        $this->add_group_control(Group_Control_Background::get_type(), [
+            'name'     => 'image_bg_hover',
+            'label'    => __('Image Box Background (Hover)', 'absl-ew'),
+            'selector' => '{{WRAPPER}} .absl-card:hover .absl-media.is-stacked',
+            'condition'=> ['image_view' => 'stacked'],
+        ]);
+
+        // Framed border (ONLY for Framed)
+        $this->add_group_control(Group_Control_Border::get_type(), [
+            'name'     => 'image_frame_border',
+            'selector' => '{{WRAPPER}} .absl-card .absl-media.is-framed',
+            'condition'=> ['image_view' => 'framed'],
+        ]);
+
+        // Image corner override (override shape)
+        $this->add_responsive_control('image_radius_custom', [
+            'label' => __('Image Radius (override shape)', 'absl-ew'),
             'type'  => Controls_Manager::SLIDER,
             'size_units' => ['px','%'],
             'range' => ['px'=>['min'=>0,'max'=>100], '%'=>['min'=>0,'max'=>50]],
             'selectors' => [
-                '{{WRAPPER}} .absl-card .absl-media img' => 'border-radius: {{SIZE}}{{UNIT}};',
+                '{{WRAPPER}} .absl-card .absl-media.is-box' => 'border-radius: {{SIZE}}{{UNIT}};',
             ],
-        ]);
-
-        $this->add_group_control(Group_Control_Border::get_type(), [
-            'name'     => 'image_border',
-            'selector' => '{{WRAPPER}} .absl-card .absl-media img',
-        ]);
-
-        $this->add_group_control(Group_Control_Box_Shadow::get_type(), [
-            'name'     => 'image_shadow',
-            'selector' => '{{WRAPPER}} .absl-card .absl-media img',
+            'description' => __('If set, this will override the shape preset.', 'absl-ew'),
+            'condition'=> ['image_view!' => 'default'],
         ]);
 
         // Spacing between media and text (image)
@@ -696,18 +739,33 @@ class ABSL_Info_Card_Widget extends Widget_Base {
     protected function render() {
         $s = $this->get_settings_for_display();
 
-        // Classes for icon view & shape (only for icon)
-        $shape_cls  = '';
-        if ( isset($s['media_type']) && $s['media_type'] === 'icon' && $s['icon_view'] !== 'default' ) {
-            if ( $s['icon_shape'] === 'circle' )      $shape_cls = 'shape-circle';
-            elseif ( $s['icon_shape'] === 'square' )  $shape_cls = 'shape-square';
-            else                                       $shape_cls = 'shape-rounded';
+        $is_icon  = isset($s['media_type']) && $s['media_type'] === 'icon';
+        $is_image = isset($s['media_type']) && $s['media_type'] === 'image';
+
+        // Shape + view classes for icon
+        $icon_shape_cls  = '';
+        if ( $is_icon && $s['icon_view'] !== 'default' ) {
+            if ( $s['icon_shape'] === 'circle' )      $icon_shape_cls = 'shape-circle';
+            elseif ( $s['icon_shape'] === 'square' )  $icon_shape_cls = 'shape-square';
+            else                                       $icon_shape_cls = 'shape-rounded';
+        }
+        $icon_view_cls = '';
+        if ( $is_icon ) {
+            if ( $s['icon_view'] === 'stacked' ) $icon_view_cls = 'is-box is-stacked';
+            elseif ( $s['icon_view'] === 'framed' ) $icon_view_cls = 'is-box is-framed';
         }
 
-        $view_cls = '';
-        if ( isset($s['media_type']) && $s['media_type'] === 'icon' ) {
-            if ( $s['icon_view'] === 'stacked' )      $view_cls = 'is-box is-stacked';
-            elseif ( $s['icon_view'] === 'framed' )   $view_cls = 'is-box is-framed';
+        // Shape + view classes for image (mirror of icon)
+        $img_shape_cls  = '';
+        if ( $is_image && $s['image_view'] !== 'default' ) {
+            if ( $s['image_shape'] === 'circle' )      $img_shape_cls = 'shape-circle';
+            elseif ( $s['image_shape'] === 'square' )  $img_shape_cls = 'shape-square';
+            else                                        $img_shape_cls = 'shape-rounded';
+        }
+        $img_view_cls = '';
+        if ( $is_image ) {
+            if ( $s['image_view'] === 'stacked' ) $img_view_cls = 'is-box is-stacked';
+            elseif ( $s['image_view'] === 'framed' ) $img_view_cls = 'is-box is-framed';
         }
 
         $pos = $s['icon_position'] ?: 'top';
@@ -723,13 +781,15 @@ class ABSL_Info_Card_Widget extends Widget_Base {
 
         $full_width = (!empty($s['button_full_width']) && $s['button_full_width'] === 'yes') ? ' is-full' : '';
 
-        // Helper: render media (icon or image)
+        // Media HTML (icon or image)
         ob_start();
-        if ( isset($s['media_type']) && $s['media_type'] === 'image' && !empty($s['image']['url']) ) {
+        if ( $is_image && !empty($s['image']['url']) ) {
             $alt = !empty($s['image_alt']) ? esc_attr($s['image_alt']) : '';
-            echo '<span class="absl-media"><img src="'.esc_url($s['image']['url']).'" alt="'.$alt.'"></span>';
+            echo '<span class="absl-media '.esc_attr($img_view_cls.' '.$img_shape_cls).'">';
+            echo '<img src="'.esc_url($s['image']['url']).'" alt="'.$alt.'">';
+            echo '</span>';
         } else {
-            echo '<span class="absl-icon '.esc_attr($view_cls.' '.$shape_cls).'">';
+            echo '<span class="absl-icon '.esc_attr($icon_view_cls.' '.$icon_shape_cls).'">';
             \Elementor\Icons_Manager::render_icon($s['icon'], ['aria-hidden' => 'true']);
             echo '</span>';
         }
@@ -800,7 +860,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
         }
         .absl-card .absl-icon i,
         .absl-card .absl-icon svg{ transition:all .3s ease; display:inline-block; }
-        .absl-card .absl-media img{ display:block; object-fit:cover; transition:all .3s ease; }
+        .absl-card .absl-media img{ display:block; object-fit:cover; transition:all .3s ease; width:100%; height:100%; }
 
         .absl-card h3{ font-weight:700; margin:0 0 6px 0; transition:all .3s ease; }
         .absl-card .absl-subtitle{ margin:0 0 10px 0; opacity:.95; transition:all .3s ease; }
@@ -815,10 +875,19 @@ class ABSL_Info_Card_Widget extends Widget_Base {
         /* Let content area flex */
         .absl-card .absl-content{ flex:1 1 auto; width:100%; }
 
-        /* Shape presets for boxed icon (Stacked/Framed) */
-        .absl-card .absl-icon.is-box.shape-circle{ border-radius:50%; }
-        .absl-card .absl-icon.is-box.shape-rounded{ border-radius:14px; }
-        .absl-card .absl-icon.is-box.shape-square{ border-radius:0; }
+        /* Shape presets for boxed media (Stacked/Framed for BOTH icon & image) */
+        .absl-card .absl-icon.is-box.shape-circle,
+        .absl-card .absl-media.is-box.shape-circle{ border-radius:50%; }
+        .absl-card .absl-icon.is-box.shape-rounded,
+        .absl-card .absl-media.is-box.shape-rounded{ border-radius:14px; }
+        .absl-card .absl-icon.is-box.shape-square,
+        .absl-card .absl-media.is-box.shape-square{ border-radius:0; }
+
+        /* If using stacked/framed, the wrapper acts as the box */
+        .absl-card .absl-icon.is-box,
+        .absl-card .absl-media.is-box{
+            overflow:hidden;
+        }
 
         /* Button base */
         .absl-card .absl-btn-wrap{ display:flex; justify-content:center; }
