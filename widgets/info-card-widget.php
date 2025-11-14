@@ -49,7 +49,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
         $this->add_control('image', [
             'label'   => __('Image', 'absl-ew'),
             'type'    => Controls_Manager::MEDIA,
-            'default' => ['url' => \Elementor\Utils::get_placeholder_image_src()],
+            'default' => ['url' => \Elementor\Utils::get_placeholder_image_src() ],
             'condition' => ['media_type' => 'image'],
         ]);
         $this->add_control('image_alt', [
@@ -179,6 +179,20 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             'condition'   => ['show_button' => 'yes'],
         ]);
 
+        /* -------- Card Link (NEW) -------- */
+        $this->add_control('card_link_heading', [
+            'type'  => Controls_Manager::HEADING,
+            'label' => __('Card Link', 'absl-ew'),
+            'separator' => 'before',
+        ]);
+        $this->add_control('card_link', [
+            'label'       => __('Link (whole card)', 'absl-ew'),
+            'type'        => Controls_Manager::URL,
+            'placeholder' => __('https://example.com', 'absl-ew'),
+            'options'     => ['url','is_external','nofollow'],
+            'description' => __('If set, the whole card becomes clickable. Inner links (like the button) keep working.', 'absl-ew'),
+        ]);
+
         $this->end_controls_section();
 
         /* -----------------------
@@ -228,7 +242,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             ],
         ]);
 
-        // Content Alignment (Media + Title + Subtitle + Description + Button)
+        // Content Alignment
         $this->add_responsive_control('content_align', [
             'label'   => __('Content Alignment', 'absl-ew'),
             'type'    => Controls_Manager::CHOOSE,
@@ -303,7 +317,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             ],
         ]);
 
-        // Vertical alignment inside card (works because card is flex-column)
+        // Vertical alignment inside card
         $this->add_responsive_control('content_vertical_align', [
             'label'   => __('Vertical Align (inside card)', 'absl-ew'),
             'type'    => Controls_Manager::CHOOSE,
@@ -315,6 +329,54 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             'default' => 'flex-start',
             'selectors' => [
                 '{{WRAPPER}} .absl-card' => 'justify-content: {{VALUE}};',
+            ],
+        ]);
+
+        $this->end_controls_section();
+
+        /* -----------------------
+         * STYLE: OVERLAY (NEW)
+         * ---------------------*/
+        $this->start_controls_section('overlay_style', [
+            'label' => __('Card Overlay', 'absl-ew'),
+            'tab'   => Controls_Manager::TAB_STYLE,
+        ]);
+
+        // Normal overlay BG
+        $this->add_group_control(Group_Control_Background::get_type(), [
+            'name'     => 'card_overlay_bg',
+            'label'    => __('Overlay (Normal)', 'absl-ew'),
+            'types'    => ['classic','gradient'],
+            'selector' => '{{WRAPPER}} .absl-card::before',
+        ]);
+
+        // Normal overlay opacity
+        $this->add_control('card_overlay_opacity', [
+            'label' => __('Overlay Opacity', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'range' => [ 'px' => [ 'min' => 0, 'max' => 1, 'step' => 0.05 ] ],
+            'default' => [ 'size' => 1 ],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card::before' => 'opacity: {{SIZE}};',
+            ],
+        ]);
+
+        // Hover overlay BG
+        $this->add_group_control(Group_Control_Background::get_type(), [
+            'name'     => 'card_overlay_hover_bg',
+            'label'    => __('Overlay (Hover)', 'absl-ew'),
+            'types'    => ['classic','gradient'],
+            'selector' => '{{WRAPPER}} .absl-card:hover::before',
+        ]);
+
+        // Hover overlay opacity
+        $this->add_control('card_overlay_opacity_hover', [
+            'label' => __('Overlay Opacity (Hover)', 'absl-ew'),
+            'type'  => Controls_Manager::SLIDER,
+            'range' => [ 'px' => [ 'min' => 0, 'max' => 1, 'step' => 0.05 ] ],
+            'default' => [ 'size' => 1 ],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card:hover::before' => 'opacity: {{SIZE}};',
             ],
         ]);
 
@@ -337,7 +399,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             'range' => ['px' => ['min'=>10, 'max'=>200]],
             'default' => ['size'=>48, 'unit'=>'px'],
             'selectors' => [
-                '{{WRAPPER}} .absl-card .absl-icon i' => 'font-size: {{SIZE}}{{UNIT}};',
+                '{{WRAPPER}} .absl-card .absl-icon i'   => 'font-size: {{SIZE}}{{UNIT}};',
                 '{{WRAPPER}} .absl-card .absl-icon svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
             ],
         ]);
@@ -419,7 +481,6 @@ class ABSL_Info_Card_Widget extends Widget_Base {
 
         /* -----------------------
          * STYLE: IMAGE (media_type = image)
-         * আইকনের সব সেটিংসের সমমান Image এর জন্য
          * ---------------------*/
         $this->start_controls_section('image_style', [
             'label' => __('Image', 'absl-ew'),
@@ -452,7 +513,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             ],
         ]);
 
-        // Image Object Fit (extra)
+        // Image Object Fit
         $this->add_control('image_object_fit', [
             'label' => __('Object Fit', 'absl-ew'),
             'type'  => Controls_Manager::SELECT,
@@ -744,32 +805,32 @@ class ABSL_Info_Card_Widget extends Widget_Base {
 
         // Shape + view classes for icon
         $icon_shape_cls  = '';
-        if ( $is_icon && $s['icon_view'] !== 'default' ) {
-            if ( $s['icon_shape'] === 'circle' )      $icon_shape_cls = 'shape-circle';
-            elseif ( $s['icon_shape'] === 'square' )  $icon_shape_cls = 'shape-square';
-            else                                       $icon_shape_cls = 'shape-rounded';
+        if ( $is_icon && ($s['icon_view'] ?? 'default') !== 'default' ) {
+            if ( ($s['icon_shape'] ?? 'rounded') === 'circle' )      $icon_shape_cls = 'shape-circle';
+            elseif ( ($s['icon_shape'] ?? 'rounded') === 'square' )  $icon_shape_cls = 'shape-square';
+            else                                                     $icon_shape_cls = 'shape-rounded';
         }
         $icon_view_cls = '';
         if ( $is_icon ) {
-            if ( $s['icon_view'] === 'stacked' ) $icon_view_cls = 'is-box is-stacked';
-            elseif ( $s['icon_view'] === 'framed' ) $icon_view_cls = 'is-box is-framed';
+            if ( ($s['icon_view'] ?? 'default') === 'stacked' ) $icon_view_cls = 'is-box is-stacked';
+            elseif ( ($s['icon_view'] ?? 'default') === 'framed' ) $icon_view_cls = 'is-box is-framed';
         }
 
-        // Shape + view classes for image (mirror of icon)
+        // Shape + view classes for image
         $img_shape_cls  = '';
-        if ( $is_image && $s['image_view'] !== 'default' ) {
-            if ( $s['image_shape'] === 'circle' )      $img_shape_cls = 'shape-circle';
-            elseif ( $s['image_shape'] === 'square' )  $img_shape_cls = 'shape-square';
-            else                                        $img_shape_cls = 'shape-rounded';
+        if ( $is_image && ($s['image_view'] ?? 'default') !== 'default' ) {
+            if ( ($s['image_shape'] ?? 'rounded') === 'circle' )      $img_shape_cls = 'shape-circle';
+            elseif ( ($s['image_shape'] ?? 'rounded') === 'square' )  $img_shape_cls = 'shape-square';
+            else                                                      $img_shape_cls = 'shape-rounded';
         }
         $img_view_cls = '';
         if ( $is_image ) {
-            if ( $s['image_view'] === 'stacked' ) $img_view_cls = 'is-box is-stacked';
-            elseif ( $s['image_view'] === 'framed' ) $img_view_cls = 'is-box is-framed';
+            if ( ($s['image_view'] ?? 'default') === 'stacked' ) $img_view_cls = 'is-box is-stacked';
+            elseif ( ($s['image_view'] ?? 'default') === 'framed' ) $img_view_cls = 'is-box is-framed';
         }
 
         $pos = $s['icon_position'] ?: 'top';
-        $pos_cls = in_array($pos, ['left','right']) ? "pos-$pos" : 'pos-top';
+        $pos_cls = in_array($pos, ['left','right'], true) ? "pos-$pos" : 'pos-top';
 
         // Button link attrs
         $btn_url   = isset($s['button_link']['url']) ? esc_url($s['button_link']['url']) : '#';
@@ -780,6 +841,15 @@ class ABSL_Info_Card_Widget extends Widget_Base {
         $btn_rel_attr = $btn_rel ? ' rel="'.esc_attr(implode(' ', $btn_rel)).'"' : '';
 
         $full_width = (!empty($s['button_full_width']) && $s['button_full_width'] === 'yes') ? ' is-full' : '';
+
+        // CARD LINK (new)
+        $card_link = $s['card_link'] ?? [];
+        $card_href = !empty($card_link['url']) ? esc_url($card_link['url']) : '';
+        $card_target = !empty($card_link['is_external']) ? '_blank' : '_self';
+        $card_rel = [];
+        if (!empty($card_link['nofollow']))    $card_rel[] = 'nofollow';
+        if (!empty($card_link['is_external'])) $card_rel[] = 'noopener noreferrer';
+        $card_rel_attr = implode(' ', $card_rel);
 
         // Media HTML (icon or image)
         ob_start();
@@ -795,8 +865,21 @@ class ABSL_Info_Card_Widget extends Widget_Base {
         }
         $media_html = ob_get_clean();
 
+        // clickable class & data attributes
+        $card_attrs = '';
+        $card_extra_cls = '';
+        if ( $card_href ) {
+            $card_extra_cls = ' is-clickable';
+            $card_attrs = sprintf(
+                ' role="link" tabindex="0" data-absl-link="%s" data-target="%s" data-rel="%s" aria-label="%s"',
+                esc_attr($card_href),
+                esc_attr($card_target),
+                esc_attr($card_rel_attr),
+                esc_attr(strip_tags($s['title'] ?? 'Card link'))
+            );
+        }
         ?>
-        <div class="absl-card <?php echo esc_attr($pos_cls); ?>">
+        <div class="absl-card <?php echo esc_attr($pos_cls . $card_extra_cls); ?>"<?php echo $card_attrs; ?>>
             <?php if ($pos === 'top'): ?>
                 <div class="absl-top">
                     <?php echo $media_html; ?>
@@ -852,7 +935,25 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             padding:30px; border-radius:15px;
             text-align:center;
             display:flex; flex-direction:column;
+            position:relative;
         }
+        .absl-card.is-clickable{ cursor:pointer; }
+
+        /* Overlay layer (controlled by Elementor overlay controls) */
+        .absl-card::before{
+            content:"";
+            position:absolute;
+            inset:0;
+            z-index:1;
+            pointer-events:none;
+            border-radius:inherit;
+            transition:all .35s ease;
+            /* default transparent so it won't change previous look unless set */
+            background: transparent;
+            opacity: 1;
+        }
+        .absl-card > *{ position:relative; z-index:2; }
+
         /* Media (icon/img) wrappers */
         .absl-card .absl-icon,
         .absl-card .absl-media{
@@ -883,14 +984,11 @@ class ABSL_Info_Card_Widget extends Widget_Base {
         .absl-card .absl-icon.is-box.shape-square,
         .absl-card .absl-media.is-box.shape-square{ border-radius:0; }
 
-        /* If using stacked/framed, the wrapper acts as the box */
         .absl-card .absl-icon.is-box,
-        .absl-card .absl-media.is-box{
-            overflow:hidden;
-        }
+        .absl-card .absl-media.is-box{ overflow:hidden; }
 
         /* Button base */
-        .absl-card .absl-btn-wrap{ display:flex; justify-content:center; }
+        .absl-card .absl-btn-wrap{ display:flex; justify-content:center; position:relative; z-index:2; }
         .absl-card .absl-btn{
             display:inline-flex; align-items:center; justify-content:center;
             text-decoration:none; cursor:pointer; transition:all .25s ease;
@@ -898,6 +996,37 @@ class ABSL_Info_Card_Widget extends Widget_Base {
         }
         .absl-card .absl-btn.is-full{ width:100%; }
         </style>
+
+        <?php if ( ! empty( $card_href ) ) : ?>
+        <script>
+        (function(){
+            function isInsideAnchor(el){ return !!el.closest('a'); }
+            document.addEventListener('click', function(e){
+                var card = e.target.closest('.absl-card[data-absl-link]');
+                if(!card) return;
+                if(isInsideAnchor(e.target)) return;
+                var url = card.getAttribute('data-absl-link');
+                var target = card.getAttribute('data-target') || '_self';
+                if(url){
+                    if(target === '_blank'){ window.open(url, '_blank', 'noopener'); }
+                    else { window.location.href = url; }
+                }
+            });
+            document.addEventListener('keydown', function(e){
+                if(e.key !== 'Enter' && e.key !== ' ') return;
+                var card = document.activeElement;
+                if(!card || !card.classList.contains('absl-card') || !card.hasAttribute('data-absl-link')) return;
+                e.preventDefault();
+                var url = card.getAttribute('data-absl-link');
+                var target = card.getAttribute('data-target') || '_self';
+                if(url){
+                    if(target === '_blank'){ window.open(url, '_blank', 'noopener'); }
+                    else { window.location.href = url; }
+                }
+            });
+        })();
+        </script>
+        <?php endif; ?>
         <?php
     }
 }
