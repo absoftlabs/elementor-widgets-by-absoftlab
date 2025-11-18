@@ -68,21 +68,22 @@
 
 ## 📁 Folder Structure
 
+```plaintext
 elementor-widgets-by-absoftlab/
 │
 ├── assets/
-│ ├── css/
-│ │ └── review-slider.css
-│ ├── js/
-│ │ └── review-slider.js
-│ └── images/
-│ └── QuoteLeft.svg
+│   ├── css/
+│   │   └── review-slider.css
+│   ├── js/
+│   │   └── review-slider.js
+│   └── images/
+│       └── QuoteLeft.svg
 │
 ├── widgets/
-│ ├── info-card-widget.php
-│ ├── image-overlay-card-widget.php
-│ ├── team-card-widget.php
-│ └── review-slider-widget.php
+│   ├── info-card-widget.php
+│   ├── image-overlay-card-widget.php
+│   ├── team-card-widget.php
+│   └── review-slider-widget.php
 │
 └── elementor-widgets-by-absoftlab.php
 
