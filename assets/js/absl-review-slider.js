@@ -1,161 +1,127 @@
 (function ($) {
-    'use strict';
+    "use strict";
 
-    /**
-     * একেকটা স্লাইডার wrapper ইনিশিয়ালাইজ
-     */
-    function initSingleSlider($wrapper) {
-        if (!$wrapper.length) return;
+    function abslInitReviewSlider($scope) {
 
-        // একবারের বেশি ইনিশিয়ালাইজ না করার জন্য গার্ড
-        if ($wrapper.data('abslReviewInit')) {
+        var $wrappers = $scope.find('.absl-review-slider-wrapper');
+        if (!$wrappers.length) {
             return;
         }
-        $wrapper.data('abslReviewInit', true);
 
-        var $track = $wrapper.find('.absl-review-track');
-        if (!$track.length) return;
+        var SwiperCtor =
+            (typeof elementorFrontend !== 'undefined' &&
+                elementorFrontend.utils &&
+                elementorFrontend.utils.swiper)
+                ? elementorFrontend.utils.swiper
+                : window.Swiper;
 
-        // স্লাইড হিসেবে প্রথমে .absl-review-slide খুঁজব, না পেলে .absl-review-card
-        var $slides = $track.find('.absl-review-slide');
-        if (!$slides.length) {
-            $slides = $track.find('.absl-review-card');
-        }
-        if (!$slides.length) return;
-
-        var total = $slides.length;
-
-        // ট্র্যাক ও স্লাইডের width সেট করি
-        $track.css({
-            width: (total * 100) + '%',
-            display: 'flex',
-            transition: 'transform .4s ease'
-        });
-
-        var slideWidth = 100 / total;
-        $slides.css({
-            width: slideWidth + '%',
-            flex: '0 0 ' + slideWidth + '%'
-        });
-
-        // ডট ন্যাভিগেশন বানাই
-        var $dotsWrap = $wrapper.find('.absl-review-dots');
-        $dotsWrap.empty();
-        for (var i = 0; i < total; i++) {
-            var $dot = $('<button type="button" class="absl-review-dot" aria-label="Go to slide ' + (i + 1) + '"></button>');
-            if (i === 0) {
-                $dot.addClass('is-active');
-            }
-            $dotsWrap.append($dot);
+        if (!SwiperCtor) {
+            return;
         }
 
-        function goTo(index) {
-            if (total <= 0) return;
+        $wrappers.each(function () {
+            var $wrapper = $(this);
 
-            // ইনফিনিট লুপ
-            if (index < 0) {
-                index = total - 1;
-            } else if (index >= total) {
-                index = 0;
+            var $swiperEl = $wrapper.find('.absl-review-swiper').first();
+            if (!$swiperEl.length) {
+                $swiperEl = $wrapper.find('.swiper').first();
+            }
+            if (!$swiperEl.length) {
+                return;
             }
 
-            var offset = -(100 / total) * index;
-            $track.css('transform', 'translate3d(' + offset + '%, 0, 0)');
-
-            // ডট আপডেট
-            var $dots = $wrapper.find('.absl-review-dot');
-            $dots.removeClass('is-active').eq(index).addClass('is-active');
-
-            // স্টেট আপডেট
-            var state = $wrapper.data('abslReviewState') || {};
-            state.current = index;
-            state.total = total;
-            $wrapper.data('abslReviewState', state);
-        }
-
-        // স্টেট সেভ
-        $wrapper.data('abslReviewState', {
-            current: 0,
-            total: total,
-            goTo: function (i) {
-                goTo(i);
+            if ($swiperEl.data('abslSwiperDone')) {
+                return;
             }
-        });
 
-        // প্রথম স্লাইডে সেট
-        goTo(0);
-    }
+            // data-attribute থেকে অপশন
+            var cardsDesktop = parseInt($swiperEl.data('cards-desktop'), 10) || 3;
+            var cardsTablet  = parseInt($swiperEl.data('cards-tablet'), 10) || cardsDesktop;
+            var cardsMobile  = parseInt($swiperEl.data('cards-mobile'), 10) || 1;
 
-    /**
-     * একটা scope (Elementor widget / পুরো ডকুমেন্ট) এর ভিতরের সব স্লাইডার ইনিশিয়ালাইজ
-     */
-    function initScope($scope) {
-        $scope.find('.absl-review-slider-wrapper').each(function () {
-            initSingleSlider($(this));
-        });
-    }
+            var loopEnabled   = String($swiperEl.data('loop')) === 'true';
+            var autoplayOn    = String($swiperEl.data('autoplay')) === 'true';
+            var autoplayDelay = parseInt($swiperEl.data('autoplay-delay'), 10) || 5000;
 
-    /**
-     * Elementor পেজে ইনিশিয়ালাইজ
-     */
-    $(window).on('elementor/frontend/init', function () {
-        if (typeof elementorFrontend !== 'undefined' && elementorFrontend.hooks) {
-            elementorFrontend.hooks.addAction(
-                'frontend/element_ready/absl_review_slider.default',
-                function ($scope) {
-                    initScope($scope);
+            // এই swiper-এ আসল স্লাইড সংখ্যা (ডুপ্লিকেট ছাড়া)
+            var realSlidesCount = $swiperEl
+                .find('.swiper-wrapper > .swiper-slide')
+                .not('.swiper-slide-duplicate')
+                .length || 0;
+
+            // ১টা স্লাইড থাকলে loop করা মানে নেই
+            var effectiveLoop = loopEnabled && realSlidesCount > 1;
+
+            // Navigation elements (নতুন + পুরোনো)
+            var nextBtn =
+                $wrapper.find('.absl-review-swiper-button-next').first()[0] ||
+                $wrapper.find('.swiper-button-next').first()[0] ||
+                null;
+
+            var prevBtn =
+                $wrapper.find('.absl-review-swiper-button-prev').first()[0] ||
+                $wrapper.find('.swiper-button-prev').first()[0] ||
+                null;
+
+            var pagEl =
+                $wrapper.find('.absl-review-swiper-pagination').first()[0] ||
+                $wrapper.find('.swiper-pagination').first()[0] ||
+                null;
+
+            var config = {
+                loop: effectiveLoop,
+                // 👉 মূল ফিক্স – overflow হলেও navigation/pagination lock করবে না
+                watchOverflow: false,
+                slidesPerView: cardsDesktop,
+                spaceBetween: 24,
+                speed: 500,
+                grabCursor: true,
+                navigation: {
+                    nextEl: nextBtn,
+                    prevEl: prevBtn
+                },
+                pagination: {
+                    el: pagEl,
+                    clickable: true
+                },
+                breakpoints: {
+                    0: {
+                        slidesPerView: cardsMobile
+                    },
+                    768: {
+                        slidesPerView: cardsTablet
+                    },
+                    1024: {
+                        slidesPerView: cardsDesktop
+                    }
                 }
-            );
-        }
+            };
+
+            if (autoplayOn) {
+                config.autoplay = {
+                    delay: autoplayDelay,
+                    disableOnInteraction: false
+                };
+            }
+
+            var swiper = new SwiperCtor($swiperEl[0], config);
+
+            $swiperEl.data('abslSwiperDone', true);
+            $swiperEl.data('abslSwiperInstance', swiper);
+        });
+    }
+
+    $(window).on('elementor/frontend/init', function () {
+        elementorFrontend.hooks.addAction(
+            'frontend/element_ready/absl_review_slider.default',
+            function ($scope) {
+                abslInitReviewSlider($scope);
+            }
+        );
     });
 
-    /**
-     * নন-Elementor / fallback – যেকোনো পেজেই DOM ready হলে
-     */
     $(function () {
-        initScope($(document));
-    });
-
-    /**
-     * 🔁 গ্লোবাল ন্যাভিগেশন হ্যান্ডলার (prev/next/dot)
-     * — সব পেজে কাজ করবে, multiple slider থাকলেও
-     */
-
-    // Arrow navigation
-    $(document).on('click', '.absl-review-prev, .absl-review-next', function (e) {
-        e.preventDefault();
-
-        var $btn = $(this);
-        var $wrapper = $btn.closest('.absl-review-slider-wrapper');
-        if (!$wrapper.length) return;
-
-        var state = $wrapper.data('abslReviewState');
-        if (!state || typeof state.goTo !== 'function') return;
-
-        var current = state.current || 0;
-        var total = state.total || 0;
-        if (total <= 0) return;
-
-        if ($btn.hasClass('absl-review-prev')) {
-            state.goTo(current - 1);
-        } else {
-            state.goTo(current + 1);
-        }
-    });
-
-    // Dot navigation
-    $(document).on('click', '.absl-review-dot', function (e) {
-        e.preventDefault();
-
-        var $dot = $(this);
-        var $wrapper = $dot.closest('.absl-review-slider-wrapper');
-        if (!$wrapper.length) return;
-
-        var state = $wrapper.data('abslReviewState');
-        if (!state || typeof state.goTo !== 'function') return;
-
-        var index = $dot.index();
-        state.goTo(index);
+        abslInitReviewSlider($(document));
     });
 
 })(jQuery);

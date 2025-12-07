@@ -11,12 +11,17 @@ use Elementor\Group_Control_Box_Shadow;
 
 class ABSL_Review_Slider_Widget extends Widget_Base {
 
-    public function get_style_depends() {
-        return [ 'absl-review-slider' ];
-    }
-    public function get_script_depends() {
-        return [ 'absl-review-slider' ];
-    }
+public function get_style_depends() {
+    // আমাদের custom CSS
+    return [ 'absl-review-slider' ];
+}
+
+public function get_script_depends() {
+    // আমাদের JS (এখানেই init হবে)
+    return [ 'absl-review-slider' ];
+}
+
+
 
     public function get_name() {
         return 'absl_review_slider';
@@ -48,7 +53,6 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
 
         $repeater = new Repeater();
 
-        // Platform label & icon (Google / Trustpilot / Yelp)
         $repeater->add_control(
             'platform_label',
             [
@@ -71,7 +75,6 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
             ]
         );
 
-        // Review text
         $repeater->add_control(
             'review_text',
             [
@@ -83,7 +86,6 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
             ]
         );
 
-        // Rating
         $repeater->add_control(
             'rating',
             [
@@ -100,7 +102,6 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
             ]
         );
 
-        // Reviewer info
         $repeater->add_control(
             'reviewer_name',
             [
@@ -161,7 +162,6 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
             ]
         );
 
-        // কতগুলো কার্ড একসাথে দেখাবে (Responsive)
         $this->add_responsive_control(
             'cards_per_view',
             [
@@ -398,7 +398,7 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
         $this->end_controls_section();
 
         /* -----------------------
-         * STYLE: ICONS (Quote + Platform)
+         * STYLE: ICONS
          * ---------------------*/
         $this->start_controls_section(
             'section_style_icons',
@@ -474,7 +474,7 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
         $this->end_controls_section();
 
         /* -----------------------
-         * STYLE: NAVIGATION (ARROWS + DOTS)
+         * STYLE: NAVIGATION
          * ---------------------*/
         $this->start_controls_section(
             'section_style_navigation',
@@ -484,7 +484,6 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
             ]
         );
 
-        // Arrow icon style
         $this->add_control(
             'arrow_icon_style',
             [
@@ -607,7 +606,6 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
             ]
         );
 
-        // Dots
         $this->add_control(
             'nav_dots_heading',
             [
@@ -726,9 +724,10 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
         $this->end_controls_section();
     }
 
-    protected function render() {
+        protected function render() {
         $s      = $this->get_settings_for_display();
         $slides = ! empty( $s['slides'] ) ? $s['slides'] : [];
+
         if ( empty( $slides ) ) {
             return;
         }
@@ -739,6 +738,13 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
         $cards_desktop = ! empty( $s['cards_per_view'] ) ? intval( $s['cards_per_view'] ) : 1;
         $cards_tablet  = ! empty( $s['cards_per_view_tablet'] ) ? intval( $s['cards_per_view_tablet'] ) : $cards_desktop;
         $cards_mobile  = ! empty( $s['cards_per_view_mobile'] ) ? intval( $s['cards_per_view_mobile'] ) : 1;
+
+        // Behaviour options
+        $loop_enabled     = ! empty( $s['loop'] ) && 'yes' === $s['loop'];
+        $autoplay_enabled = ! empty( $s['autoplay'] ) && 'yes' === $s['autoplay'];
+        $autoplay_delay   = ! empty( $s['autoplay_delay'] ) ? intval( $s['autoplay_delay'] ) : 5000;
+        $show_arrows      = ! empty( $s['show_arrows'] ) && 'yes' === $s['show_arrows'];
+        $show_dots        = ! empty( $s['show_dots'] ) && 'yes' === $s['show_dots'];
 
         // Quote icon (fixed path)
         $quote_icon_url = plugin_dir_url( __FILE__ ) . '../assets/images/QuoteLeft.svg';
@@ -760,17 +766,21 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
                 $right_icon_class = 'eicon-chevron-right';
                 break;
         }
-
-        $loop_enabled     = ( ! empty( $s['loop'] ) && $s['loop'] === 'yes' ) ? 'true' : 'false';
-        $autoplay_enabled = ( ! empty( $s['autoplay'] ) && $s['autoplay'] === 'yes' );
-        $autoplay_delay   = ! empty( $s['autoplay_delay'] ) ? intval( $s['autoplay_delay'] ) : 5000;
-        $show_arrows      = ( ! empty( $s['show_arrows'] ) && $s['show_arrows'] === 'yes' );
-        $show_dots        = ( ! empty( $s['show_dots'] ) && $s['show_dots'] === 'yes' );
         ?>
         <div class="absl-review-slider-wrapper">
-            <div id="<?php echo esc_attr( $slider_id ); ?>" class="swiper absl-review-swiper">
+            <div
+                id="<?php echo esc_attr( $slider_id ); ?>"
+                class="swiper absl-review-swiper"
+                data-cards-desktop="<?php echo esc_attr( $cards_desktop ); ?>"
+                data-cards-tablet="<?php echo esc_attr( $cards_tablet ); ?>"
+                data-cards-mobile="<?php echo esc_attr( $cards_mobile ); ?>"
+                data-loop="<?php echo $loop_enabled ? 'true' : 'false'; ?>"
+                data-autoplay="<?php echo $autoplay_enabled ? 'true' : 'false'; ?>"
+                data-autoplay-delay="<?php echo esc_attr( $autoplay_delay ); ?>"
+            >
                 <div class="swiper-wrapper">
-                    <?php foreach ( $slides as $slide ) :
+                    <?php
+                    foreach ( $slides as $slide ) :
 
                         $platform_label    = $slide['platform_label'] ?? '';
                         $platform_icon_url = ! empty( $slide['platform_icon']['url'] ) ? $slide['platform_icon']['url'] : '';
@@ -836,7 +846,9 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
                                 </div>
                             </div>
                         </div>
-                    <?php endforeach; ?>
+                        <?php
+                    endforeach;
+                    ?>
                 </div>
 
                 <?php if ( $show_arrows ) : ?>
@@ -863,7 +875,7 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
                 width: 100%;
             }
             .absl-review-swiper {
-                overflow: hidden; /* Extra slides outside container will be hidden */
+                overflow: hidden;
                 position: relative;
             }
             .absl-review-card {
@@ -935,7 +947,6 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
                 margin-left: 2px;
             }
 
-            /* Swiper nav base */
             .absl-review-swiper-button-prev,
             .absl-review-swiper-button-next {
                 position: absolute;
@@ -954,12 +965,11 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
                 z-index: 10;
             }
             .absl-review-swiper-button-prev {
-                left: 12px;   /* inside container so not hidden by overflow */
+                left: 12px;
             }
             .absl-review-swiper-button-next {
                 right: 12px;
             }
-            /* Hide default Swiper arrow icons */
             .absl-review-swiper-button-prev:after,
             .absl-review-swiper-button-next:after {
                 display: none !important;
@@ -969,7 +979,6 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
                 color: #111827;
             }
 
-            /* Pagination dots */
             .absl-review-swiper-pagination {
                 margin-top: 16px;
                 display: flex;
@@ -988,70 +997,8 @@ class ABSL_Review_Slider_Widget extends Widget_Base {
                 background: #111827;
             }
         </style>
-
-        <script>
-            (function($){
-                // Unique init function per widget instance
-                function initAbslReviewSlider_<?php echo esc_js( $this->get_id() ); ?>() {
-                    var $el = $('#<?php echo esc_js( $slider_id ); ?>');
-                    if ( ! $el.length || typeof Swiper === 'undefined' ) {
-                        return;
-                    }
-                    // prevent double init
-                    if ( $el.data('abslSwiperInited') ) {
-                        return;
-                    }
-                    $el.data('abslSwiperInited', true);
-
-                    var swiper = new Swiper($el[0], {
-                        slidesPerView: <?php echo $cards_desktop; ?>,
-                        spaceBetween: 24,
-                        loop: <?php echo $loop_enabled; ?>,
-                        autoplay: <?php
-                            if ( $autoplay_enabled ) {
-                                echo '{ delay: ' . $autoplay_delay . ', disableOnInteraction: false }';
-                            } else {
-                                echo 'false';
-                            }
-                        ?>,
-                        navigation: {
-                            nextEl: '#<?php echo esc_js( $slider_id ); ?> .absl-review-swiper-button-next',
-                            prevEl: '#<?php echo esc_js( $slider_id ); ?> .absl-review-swiper-button-prev',
-                        },
-                        pagination: {
-                            el: '#<?php echo esc_js( $slider_id ); ?> .absl-review-swiper-pagination',
-                            clickable: true,
-                        },
-                        breakpoints: {
-                            0: {
-                                slidesPerView: <?php echo $cards_mobile; ?>
-                            },
-                            768: {
-                                slidesPerView: <?php echo $cards_tablet; ?>
-                            },
-                            1024: {
-                                slidesPerView: <?php echo $cards_desktop; ?>
-                            }
-                        }
-                    });
-                }
-
-                // Normal front-end pages (Elementor না থাকলেও)
-                $(document).ready(function(){
-                    initAbslReviewSlider_<?php echo esc_js( $this->get_id() ); ?>();
-                });
-
-                // Elementor front-end / editor এর জন্য
-                $(window).on('elementor/frontend/init', function(){
-                    elementorFrontend.hooks.addAction(
-                        'frontend/element_ready/<?php echo esc_js( $this->get_name() ); ?>.default',
-                        function(){
-                            initAbslReviewSlider_<?php echo esc_js( $this->get_id() ); ?>();
-                        }
-                    );
-                });
-            })(jQuery);
-        </script>
         <?php
     }
+
+
 }
