@@ -5,19 +5,20 @@
  * Plugin URI:  https://absoftlab.com/elementor-widgets-by-absoftlab
  * Author:      absoftlab
  * Author URI:  https://absoftlab.com
- * Version:     1.4.2
+ * Version:     1.5.3
  * Text Domain: absl-ew
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
     exit;
 }
 
 /**
  * ✅ Check Elementor dependency
  */
-function absl_ew_elementor_loaded() {
-    if ( ! did_action( 'elementor/loaded' ) ) {
+function absl_ew_elementor_loaded()
+{
+    if (! did_action('elementor/loaded')) {
         add_action(
             'admin_notices',
             function () {
@@ -35,23 +36,61 @@ function absl_ew_elementor_loaded() {
 add_action(
     'elementor/elements/categories_registered',
     function ( $elements_manager ) {
+
+        // আগে থেকেই থাকলে remove করে নতুন করে add করবো
+        if ( method_exists( $elements_manager, 'remove_category' ) ) {
+            $elements_manager->remove_category( 'absoftlab' );
+        }
+
         $elements_manager->add_category(
             'absoftlab',
-            array(
-                'title' => __( 'ABSOFTLAB Widgets', 'absl-ew' ),
-                'icon'  => 'fa fa-plug',
-            )
+            [
+                'title' => __( 'absoftlab', 'absl-ew' ),
+                'icon'  => 'eicon-star',
+            ],
+            0 // 🔥 priority = 0 → একদম উপরে
         );
-    }
+    },
+    1 // 🔥 hook priority খুব early
 );
+
+
+/**
+ * Editor-only: Subtle brand border for absoftlab widget cards
+ */
+add_action( 'elementor/editor/after_enqueue_styles', function () {
+
+    wp_add_inline_style(
+        'elementor-editor',
+        '
+        /* Target only absoftlab widgets inside the panel */
+        .elementor-panel .elementor-element-wrapper[data-categories~="absoftlab"] {
+            border: 1px solid rgba(101, 40, 247, 0.35);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        /* Hover effect for better attention */
+        .elementor-panel .elementor-element-wrapper[data-categories~="absoftlab"]:hover {
+            border-color: #6528f7;
+            box-shadow: 0 0 0 1px rgba(101, 40, 247, 0.35);
+        }
+        '
+    );
+
+});
+
+
+
 
 /**
  * ✅ Register widgets
  */
-function absl_ew_register_widgets( $widgets_manager ) {
+function absl_ew_register_widgets($widgets_manager)
+{
 
     // Elementor active check
-    if ( ! absl_ew_elementor_loaded() ) {
+    if (! absl_ew_elementor_loaded()) {
         return;
     }
 
@@ -60,22 +99,25 @@ function absl_ew_register_widgets( $widgets_manager ) {
     require_once __DIR__ . '/widgets/image-overlay-card-widget.php';
     require_once __DIR__ . '/widgets/team-card-widget.php';
     require_once __DIR__ . '/widgets/review-slider-widget.php';
+    require_once __DIR__ . '/widgets/motion-gallery-widget.php';
 
     // রেজিস্টার করো
-    $widgets_manager->register( new \ABSL_Info_Card_Widget() );
-    $widgets_manager->register( new \ABSL_Image_Overlay_Card_Widget() );
-    $widgets_manager->register( new \ABSL_Team_Card_Widget() );
-    $widgets_manager->register( new \ABSL_Review_Slider_Widget() );
+    $widgets_manager->register(new \ABSL_Info_Card_Widget());
+    $widgets_manager->register(new \ABSL_Image_Overlay_Card_Widget());
+    $widgets_manager->register(new \ABSL_Team_Card_Widget());
+    $widgets_manager->register(new \ABSL_Review_Slider_Widget());
+    $widgets_manager->register(new \ABSL_Motion_Gallery_Widget());
 }
-add_action( 'elementor/widgets/register', 'absl_ew_register_widgets' );
+add_action('elementor/widgets/register', 'absl_ew_register_widgets');
 
 /**
  * ✅ Initialize after Elementor loads
  */
-function absl_ew_init() {
+function absl_ew_init()
+{
     absl_ew_elementor_loaded();
 }
-add_action( 'plugins_loaded', 'absl_ew_init' );
+add_action('plugins_loaded', 'absl_ew_init');
 
 /**
  * ✅ Global assets for Review Slider
@@ -84,30 +126,47 @@ add_action( 'plugins_loaded', 'absl_ew_init' );
  * Swiper আলাদা করে লোড করবো না — Elementor নিজেই Swiper লোড করবে
  * এবং আমরা elementorFrontend.utils.swiper ব্যবহার করব।
  */
-function absl_ew_register_assets() {
+function absl_ew_register_assets()
+{
 
-    if ( ! absl_ew_elementor_loaded() ) {
+    if (! absl_ew_elementor_loaded()) {
         return;
     }
 
     // Review Slider CSS
     wp_register_style(
         'absl-review-slider',
-        plugins_url( 'assets/css/absl-review-slider.css', __FILE__ ),
-        array(),
+        plugins_url('assets/css/absl-review-slider.css', __FILE__),
+        [],
         '1.0.0'
+    );
+
+    // Motion Gallery CSS
+    wp_register_style(
+        'absl-motion-gallery',
+        plugins_url('assets/css/absl-motion-gallery.css', __FILE__),
+        [],
+        '1.0.0'
+    );
+
+    wp_register_script(
+        'absl-motion-gallery',
+        plugins_url('assets/js/absl-motion-gallery.js', __FILE__),
+        [],
+        '1.0.0',
+        true
     );
 
     // Review Slider JS (init logic)
     wp_register_script(
         'absl-review-slider',
-        plugins_url( 'assets/js/absl-review-slider.js', __FILE__ ),
-        array( 'jquery', 'elementor-frontend' ),
+        plugins_url('assets/js/absl-review-slider.js', __FILE__),
+        ['jquery', 'elementor-frontend'],
         '1.0.0',
         true
     );
 }
 
 // frontend + editor – দুই জায়গাতেই assets উপলব্ধ থাকুক
-add_action( 'elementor/frontend/after_register_scripts', 'absl_ew_register_assets' );
-add_action( 'elementor/editor/before_enqueue_scripts', 'absl_ew_register_assets' );
+add_action('elementor/frontend/after_register_scripts', 'absl_ew_register_assets');
+add_action('elementor/editor/before_enqueue_scripts', 'absl_ew_register_assets');

@@ -10,9 +10,9 @@ use Elementor\Group_Control_Box_Shadow;
 
 class ABSL_Info_Card_Widget extends Widget_Base {
     public function get_name() { return 'absl_info_card'; }
-    public function get_title() { return 'ABSL Info Card'; }
+    public function get_title() { return __('Info Card', 'absl-ew'); }
     public function get_icon() { return 'eicon-info-box'; }
-    public function get_categories() { return ['absoftlab','general']; }
+    public function get_categories() { return ['absoftlab']; }
 
     protected function register_controls() {
 

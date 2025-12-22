@@ -10,9 +10,9 @@ use Elementor\Group_Control_Box_Shadow;
 
 class ABSL_Image_Overlay_Card_Widget extends Widget_Base {
     public function get_name() { return 'absl_image_overlay_card'; }
-    public function get_title() { return __('ABSL Image Overlay Card', 'absl-ew'); }
+    public function get_title() { return __('Image Overlay', 'absl-ew'); }
     public function get_icon() { return 'eicon-image-box'; }
-    public function get_categories() { return ['absoftlab','general']; }
+    public function get_categories() { return ['absoftlab']; }
 
     /* -----------------------
      * CONTROLS

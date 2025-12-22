@@ -11,9 +11,9 @@ use Elementor\Repeater;
 
 class ABSL_Team_Card_Widget extends Widget_Base {
     public function get_name() { return 'absl_team_card'; }
-    public function get_title() { return 'ABSL Team Card'; }
+    public function get_title() { return __('Team Card', 'absl-ew'); }
     public function get_icon() { return 'eicon-person'; }
-    public function get_categories() { return ['absoftlab','general']; }
+    public function get_categories() { return ['absoftlab']; }
 
     protected function register_controls() {
 

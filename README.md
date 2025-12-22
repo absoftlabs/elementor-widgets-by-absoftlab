@@ -80,6 +80,7 @@ elementor-widgets-by-absoftlab/
 │       └── QuoteLeft.svg
 │
 ├── widgets/
+|   ├──motion-gallery-widget.php
 │   ├── info-card-widget.php
 │   ├── image-overlay-card-widget.php
 │   ├── team-card-widget.php

@@ -36,7 +36,7 @@ public function get_script_depends() {
     }
 
     public function get_categories() {
-        return [ 'absoftlab', 'general' ];
+        return [ 'absoftlab'];
     }
 
     protected function register_controls() {

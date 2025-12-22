@@ -1,0 +1,31 @@
+.absl-motion-gallery {
+    overflow: hidden;
+    width: 100%;
+}
+
+.absl-track {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    will-change: transform;
+}
+
+.absl-logo {
+    flex: 0 0 auto;
+}
+
+.absl-logo img {
+    display: block;
+    width: auto;
+    transition: filter 0.3s ease;
+}
+
+/* Grayscale default */
+.is-grayscale .absl-logo img {
+    filter: grayscale(100%);
+}
+
+/* Color on hover */
+.is-grayscale.hover-color .absl-logo:hover img {
+    filter: grayscale(0%);
+}
