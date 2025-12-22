@@ -5,7 +5,7 @@
  * Plugin URI:  https://absoftlab.com/elementor-widgets-by-absoftlab
  * Author:      absoftlab
  * Author URI:  https://absoftlab.com
- * Version:     1.5.3
+ * Version:     1.5.5
  * Text Domain: absl-ew
  */
 

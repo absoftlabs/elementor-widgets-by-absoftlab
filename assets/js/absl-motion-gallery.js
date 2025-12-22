@@ -9,35 +9,34 @@
         if (!track) return;
 
         const speedControl = parseFloat($gallery.data('speed')) || 40;
-        const step = 100 / speedControl;
+        const speed = 100 / speedControl;
 
         const isRight = $gallery.hasClass('dir-right');
 
-        /* clone once */
-        if (!track.dataset.cloned) {
+        /* --------- CLONE CONTENT (ONCE) --------- */
+        if (!track.dataset.infinite) {
             track.innerHTML += track.innerHTML;
-            track.dataset.cloned = 'true';
+            track.innerHTML += track.innerHTML; // 3x content
+            track.dataset.infinite = 'true';
         }
 
-        const baseWidth = track.scrollWidth / 2;
+        /* --------- FREEZE WIDTH (CRITICAL) --------- */
+        const baseWidth = track.scrollWidth / 3;
 
-        // starting offset
-        let x = isRight ? -baseWidth : 0;
+        let pos = 0;
 
         function animate() {
 
-            // always move left
-            x -= step;
+            pos -= speed;
 
             /*
-             * MODULO-BASED LOOP
-             * no hard reset = no flicker
+             * MODULO LOOP
+             * Never jumps, never resets
              */
-            if (x <= -baseWidth * 2) {
-                x += baseWidth;
-            }
+            pos = pos % baseWidth;
 
-            track.style.transform = `translateX(${x}px)`;
+            track.style.transform = `translateX(${isRight ? -pos : pos}px)`;
+
             requestAnimationFrame(animate);
         }
 
@@ -45,12 +44,10 @@
     }
 
     $(window).on('elementor/frontend/init', function () {
-
         elementorFrontend.hooks.addAction(
             'frontend/element_ready/absl_motion_gallery.default',
             initMotionGallery
         );
-
     });
 
 })(jQuery);
