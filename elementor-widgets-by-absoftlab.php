@@ -5,7 +5,7 @@
  * Plugin URI:  https://absoftlab.com/elementor-widgets-by-absoftlab
  * Author:      absoftlab
  * Author URI:  https://absoftlab.com
- * Version:     1.5.5
+ * Version:     1.5.8
  * Text Domain: absl-ew
  */
 
@@ -35,30 +35,29 @@ function absl_ew_elementor_loaded()
  */
 add_action(
     'elementor/elements/categories_registered',
-    function ( $elements_manager ) {
+    function ($elements_manager) {
 
         // আগে থেকেই থাকলে remove করে নতুন করে add করবো
-        if ( method_exists( $elements_manager, 'remove_category' ) ) {
-            $elements_manager->remove_category( 'absoftlab' );
+        if (method_exists($elements_manager, 'remove_category')) {
+            $elements_manager->remove_category('absoftlab');
         }
 
         $elements_manager->add_category(
             'absoftlab',
             [
-                'title' => __( 'absoftlab', 'absl-ew' ),
+                'title' => __('absoftlab', 'absl-ew'),
                 'icon'  => 'eicon-star',
             ],
-            0 // 🔥 priority = 0 → একদম উপরে
+            0// 🔥 priority = 0 → একদম উপরে
         );
     },
-    1 // 🔥 hook priority খুব early
+    1// 🔥 hook priority খুব early
 );
-
 
 /**
  * Editor-only: Subtle brand border for absoftlab widget cards
  */
-add_action( 'elementor/editor/after_enqueue_styles', function () {
+add_action('elementor/editor/after_enqueue_styles', function () {
 
     wp_add_inline_style(
         'elementor-editor',
@@ -80,9 +79,6 @@ add_action( 'elementor/editor/after_enqueue_styles', function () {
 
 });
 
-
-
-
 /**
  * ✅ Register widgets
  */
@@ -100,6 +96,7 @@ function absl_ew_register_widgets($widgets_manager)
     require_once __DIR__ . '/widgets/team-card-widget.php';
     require_once __DIR__ . '/widgets/review-slider-widget.php';
     require_once __DIR__ . '/widgets/motion-gallery-widget.php';
+    require_once __DIR__ . '/widgets/details-card-widget.php';
 
     // রেজিস্টার করো
     $widgets_manager->register(new \ABSL_Info_Card_Widget());
@@ -107,6 +104,7 @@ function absl_ew_register_widgets($widgets_manager)
     $widgets_manager->register(new \ABSL_Team_Card_Widget());
     $widgets_manager->register(new \ABSL_Review_Slider_Widget());
     $widgets_manager->register(new \ABSL_Motion_Gallery_Widget());
+    $widgets_manager->register(new \ABSL_Details_Card_Widget());
 }
 add_action('elementor/widgets/register', 'absl_ew_register_widgets');
 
@@ -118,13 +116,8 @@ function absl_ew_init()
     absl_ew_elementor_loaded();
 }
 add_action('plugins_loaded', 'absl_ew_init');
-
 /**
- * ✅ Global assets for Review Slider
- *
- * এখানে আমরা শুধু নিজের CSS + JS register করছি।
- * Swiper আলাদা করে লোড করবো না — Elementor নিজেই Swiper লোড করবে
- * এবং আমরা elementorFrontend.utils.swiper ব্যবহার করব।
+ * ✅ Register frontend + editor assets (CSS + JS)
  */
 function absl_ew_register_assets()
 {
@@ -145,6 +138,13 @@ function absl_ew_register_assets()
     wp_register_style(
         'absl-motion-gallery',
         plugins_url('assets/css/absl-motion-gallery.css', __FILE__),
+        [],
+        '1.0.0'
+    );
+
+    wp_register_style(
+        'absl-details-card',
+        plugins_url('assets/css/absl-details-card.css', __FILE__),
         [],
         '1.0.0'
     );
