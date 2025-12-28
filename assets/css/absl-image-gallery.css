@@ -1,0 +1,118 @@
+/* ================= FILTER TABS ================= */
+
+.absl-filter {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+}
+.absl-filter::-webkit-scrollbar { display:none; }
+
+.absl-filter button {
+    position: relative;
+    background: #fff;
+    color: #111827;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+/* Underline (dynamic) */
+.absl-filter button::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 0;
+    height: var(--ul-height,2px);
+    background: var(--ul-color,currentColor);
+    transition: width .3s ease, left .3s ease;
+}
+.absl-filter button.active::after {
+    left: 10%;
+    width: 80%;
+}
+.absl-ul-off .absl-filter button::after {
+    display: none;
+}
+
+/* Count badge */
+.absl-count {
+    margin-left: 6px;
+    font-size: 11px;
+    background: rgba(0,0,0,.08);
+    padding: 2px 6px;
+    border-radius: 20px;
+}
+
+/* ================= GRID ================= */
+
+.absl-gallery-grid.layout-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 20px;
+}
+
+/* ================= MASONRY ================= */
+
+.absl-gallery-grid.layout-masonry {
+    column-count: 3;
+    column-gap: 20px;
+}
+.absl-gallery-grid.layout-masonry .absl-gallery-item {
+    break-inside: avoid;
+    margin-bottom: 20px;
+}
+
+/* ================= IMAGE ================= */
+
+.absl-gallery-item {
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    transition: transform var(--hover-speed,300ms) ease,
+                box-shadow var(--hover-speed,300ms) ease;
+}
+
+.absl-hover-none:hover { transform: none; }
+.absl-hover-lift:hover { transform: translateY(-6px); }
+.absl-hover-zoom:hover img { transform: scale(1.08); }
+.absl-hover-zoom-rotate:hover img { transform: scale(1.1) rotate(2deg); }
+
+.absl-gallery-item img {
+    width: 100%;
+    display: block;
+    transition: transform var(--hover-speed,300ms) ease;
+}
+
+/* Overlay */
+.absl-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .3s ease;
+}
+.absl-gallery-item:hover .absl-overlay {
+    opacity: 1;
+}
+
+/* ================= LOAD MORE ================= */
+
+.absl-load-more {
+    margin: 30px auto 0;
+    display: block;
+    padding: 12px 28px;
+    border-radius: 10px;
+    border: none;
+    background: #111827;
+    color: #fff;
+    cursor: pointer;
+}

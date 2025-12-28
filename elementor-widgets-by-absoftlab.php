@@ -5,7 +5,7 @@
  * Plugin URI:  https://absoftlab.com/elementor-widgets-by-absoftlab
  * Author:      absoftlab
  * Author URI:  https://absoftlab.com
- * Version:     1.5.8
+ * Version:     1.7.0
  * Text Domain: absl-ew
  */
 
@@ -97,6 +97,7 @@ function absl_ew_register_widgets($widgets_manager)
     require_once __DIR__ . '/widgets/review-slider-widget.php';
     require_once __DIR__ . '/widgets/motion-gallery-widget.php';
     require_once __DIR__ . '/widgets/details-card-widget.php';
+    require_once __DIR__ . '/widgets/image-gallery-widget.php';
 
     // রেজিস্টার করো
     $widgets_manager->register(new \ABSL_Info_Card_Widget());
@@ -105,6 +106,7 @@ function absl_ew_register_widgets($widgets_manager)
     $widgets_manager->register(new \ABSL_Review_Slider_Widget());
     $widgets_manager->register(new \ABSL_Motion_Gallery_Widget());
     $widgets_manager->register(new \ABSL_Details_Card_Widget());
+    $widgets_manager->register(new \ABSL_Image_Gallery_Widget());
 }
 add_action('elementor/widgets/register', 'absl_ew_register_widgets');
 
@@ -165,6 +167,22 @@ function absl_ew_register_assets()
         '1.0.0',
         true
     );
+
+    wp_register_style(
+        'absl-image-gallery',
+        plugins_url('assets/css/absl-image-gallery.css', __FILE__),
+        [],
+        '1.0.0'
+    );
+
+    wp_register_script(
+        'absl-image-gallery',
+        plugins_url('assets/js/absl-image-gallery.js', __FILE__),
+        ['jquery'],
+        '1.0.0',
+        true
+    );
+
 }
 
 // frontend + editor – দুই জায়গাতেই assets উপলব্ধ থাকুক
