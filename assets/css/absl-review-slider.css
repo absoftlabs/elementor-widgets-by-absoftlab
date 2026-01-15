@@ -95,13 +95,13 @@
 }
 
 /* Swiper Dots */
-.swiper-pagination-bullet {
-    background: #d1d1d1 !important;
-    opacity: 1 !important;
+.absl-review-slider-wrapper .swiper-pagination-bullet {
+    background: var(--absl-review-dot-color, #d1d1d1);
+    opacity: 1;
 }
 
-.swiper-pagination-bullet-active {
-    background: #84BD47 !important;
+.absl-review-slider-wrapper .swiper-pagination-bullet-active {
+    background: var(--absl-review-dot-color-active, #84BD47);
 }
 
 .absl-review-track.absl-no-anim {

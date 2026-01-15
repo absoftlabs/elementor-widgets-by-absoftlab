@@ -236,6 +236,18 @@ public function get_script_depends() {
             ]
         );
 
+        $this->add_control(
+            'equal_height',
+            [
+                'label'        => __( 'Equal Height Cards', 'absl-ew' ),
+                'type'         => Controls_Manager::SWITCHER,
+                'label_on'     => __( 'On', 'absl-ew' ),
+                'label_off'    => __( 'Off', 'absl-ew' ),
+                'return_value' => 'yes',
+                'default'      => 'no',
+            ]
+        );
+
         $this->end_controls_section();
 
         /* -----------------------
@@ -262,6 +274,15 @@ public function get_script_depends() {
             [
                 'name'     => 'card_border',
                 'selector' => '{{WRAPPER}} .absl-review-card',
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Border::get_type(),
+            [
+                'name'     => 'card_border_hover',
+                'label'    => __( 'Border (Hover)', 'absl-ew' ),
+                'selector' => '{{WRAPPER}} .absl-review-card:hover',
             ]
         );
 
@@ -405,6 +426,17 @@ public function get_script_depends() {
             [
                 'label' => __( 'Icons', 'absl-ew' ),
                 'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_control(
+            'quote_icon',
+            [
+                'label'   => __( 'Quote Icon', 'absl-ew' ),
+                'type'    => Controls_Manager::MEDIA,
+                'default' => [
+                    'url' => plugin_dir_url( __FILE__ ) . '../assets/images/QuoteLeft.svg',
+                ],
             ]
         );
 
@@ -705,7 +737,7 @@ public function get_script_depends() {
                 'label'     => __( 'Dot Color', 'absl-ew' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .absl-review-swiper-pagination .swiper-pagination-bullet' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .absl-review-slider-wrapper' => '--absl-review-dot-color: {{VALUE}};',
                 ],
             ]
         );
@@ -716,7 +748,7 @@ public function get_script_depends() {
                 'label'     => __( 'Active Dot Color', 'absl-ew' ),
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} .absl-review-swiper-pagination .swiper-pagination-bullet.swiper-pagination-bullet-active' => 'background-color: {{VALUE}};',
+                    '{{WRAPPER}} .absl-review-slider-wrapper' => '--absl-review-dot-color-active: {{VALUE}};',
                 ],
             ]
         );
@@ -745,9 +777,10 @@ public function get_script_depends() {
         $autoplay_delay   = ! empty( $s['autoplay_delay'] ) ? intval( $s['autoplay_delay'] ) : 5000;
         $show_arrows      = ! empty( $s['show_arrows'] ) && 'yes' === $s['show_arrows'];
         $show_dots        = ! empty( $s['show_dots'] ) && 'yes' === $s['show_dots'];
+        $equal_height     = ! empty( $s['equal_height'] ) && 'yes' === $s['equal_height'];
 
-        // Quote icon (fixed path)
-        $quote_icon_url = plugin_dir_url( __FILE__ ) . '../assets/images/QuoteLeft.svg';
+        // Quote icon (customizable)
+        $quote_icon_url = ! empty( $s['quote_icon']['url'] ) ? $s['quote_icon']['url'] : plugin_dir_url( __FILE__ ) . '../assets/images/QuoteLeft.svg';
 
         // Arrow icon classes
         $arrow_style = $s['arrow_icon_style'] ?? 'chevron';
@@ -767,7 +800,7 @@ public function get_script_depends() {
                 break;
         }
         ?>
-        <div class="absl-review-slider-wrapper">
+        <div class="absl-review-slider-wrapper<?php echo $equal_height ? ' absl-review-equal-height' : ''; ?>">
             <div
                 id="<?php echo esc_attr( $slider_id ); ?>"
                 class="swiper absl-review-swiper"
@@ -886,6 +919,16 @@ public function get_script_depends() {
                 flex-direction: column;
                 min-height: 220px;
             }
+            .absl-review-equal-height .absl-review-swiper .swiper-wrapper {
+                align-items: stretch;
+            }
+            .absl-review-equal-height .absl-review-swiper .swiper-slide {
+                height: auto;
+                display: flex;
+            }
+            .absl-review-equal-height .absl-review-card {
+                height: 100%;
+            }
             .absl-review-top-row {
                 display: flex;
                 align-items: flex-start;
@@ -989,12 +1032,12 @@ public function get_script_depends() {
                 width: 8px;
                 height: 8px;
                 border-radius: 999px;
-                background: #d1d5db;
+                background: var(--absl-review-dot-color, #d1d5db);
                 opacity: 1;
                 margin: 0 4px;
             }
             .absl-review-swiper-pagination .swiper-pagination-bullet.swiper-pagination-bullet-active {
-                background: #111827;
+                background: var(--absl-review-dot-color-active, #111827);
             }
         </style>
         <?php

@@ -1,0 +1,72 @@
+/* Accordion base */
+.absl-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.absl-accordion-item {
+    background: #1c2128;
+    border: 1px solid #2a313a;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.absl-accordion-item.is-open {
+    border-color: var(--absl-accordion-border-active, #ef6c24);
+    box-shadow: 0 12px 36px rgba(239, 108, 36, 0.18);
+}
+
+.absl-accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 22px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.absl-accordion-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #f9fafb;
+}
+
+.absl-accordion-toggle {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #e5e7eb;
+    background: rgba(255, 255, 255, 0.06);
+    transition: transform 0.25s ease;
+}
+
+.absl-accordion-toggle i,
+.absl-accordion-toggle svg {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+.absl-accordion-item.is-open .absl-accordion-toggle {
+    transform: rotate(180deg);
+}
+
+.absl-accordion-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.28s ease;
+}
+
+.absl-accordion-content {
+    padding: 0 22px 20px;
+    color: #a1a1aa;
+    font-size: 14px;
+    line-height: 1.6;
+}
