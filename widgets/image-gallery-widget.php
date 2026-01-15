@@ -228,6 +228,22 @@ class ABSL_Image_Gallery_Widget extends Widget_Base {
             'selector' => '{{WRAPPER}} .absl-gallery-item',
         ]);
 
+        $this->add_responsive_control('image_radius', [
+            'label' => __('Image Border Radius', 'absl-ew'),
+            'type' => Controls_Manager::SLIDER,
+            'size_units' => ['px', '%'],
+            'range' => [
+                'px' => ['min' => 0, 'max' => 100],
+                '%'  => ['min' => 0, 'max' => 50],
+            ],
+            'default' => ['size' => 0, 'unit' => 'px'],
+            'selectors' => [
+                '{{WRAPPER}} .absl-gallery-item' => 'border-radius: {{SIZE}}{{UNIT}};',
+                '{{WRAPPER}} .absl-gallery-item img' => 'border-radius: {{SIZE}}{{UNIT}};',
+                '{{WRAPPER}} .absl-gallery-item .absl-overlay' => 'border-radius: {{SIZE}}{{UNIT}};',
+            ],
+        ]);
+
         $this->end_controls_section();
 
         /* ================= STYLE : LOAD MORE ================= */

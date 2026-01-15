@@ -203,16 +203,16 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             'tab'   => Controls_Manager::TAB_STYLE,
         ]);
 
-        $this->add_group_control(Group_Control_Background::get_type(), [
-            'name'     => 'card_bg',
-            'label'    => __('Normal Background', 'absl-ew'),
-            'selector' => '{{WRAPPER}} .absl-card',
+        $this->start_controls_tabs('card_style_tabs');
+
+        $this->start_controls_tab('card_style_tab_normal', [
+            'label' => __('Normal', 'absl-ew'),
         ]);
 
         $this->add_group_control(Group_Control_Background::get_type(), [
-            'name'     => 'card_hover_bg',
-            'label'    => __('Hover Background', 'absl-ew'),
-            'selector' => '{{WRAPPER}} .absl-card:hover',
+            'name'     => 'card_bg',
+            'label'    => __('Background', 'absl-ew'),
+            'selector' => '{{WRAPPER}} .absl-card',
         ]);
 
         $this->add_group_control(Group_Control_Border::get_type(), [
@@ -220,17 +220,43 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             'selector' => '{{WRAPPER}} .absl-card',
         ]);
 
+        $this->add_group_control(Group_Control_Box_Shadow::get_type(), [
+            'name'     => 'card_shadow',
+            'selector' => '{{WRAPPER}} .absl-card',
+        ]);
+
+        $this->end_controls_tab();
+
+        $this->start_controls_tab('card_style_tab_hover', [
+            'label' => __('Hover', 'absl-ew'),
+        ]);
+
+        $this->add_group_control(Group_Control_Background::get_type(), [
+            'name'     => 'card_hover_bg',
+            'label'    => __('Background', 'absl-ew'),
+            'selector' => '{{WRAPPER}} .absl-card:hover',
+        ]);
+
+        $this->add_group_control(Group_Control_Border::get_type(), [
+            'name'     => 'card_border_hover',
+            'selector' => '{{WRAPPER}} .absl-card:hover',
+        ]);
+
+        $this->add_group_control(Group_Control_Box_Shadow::get_type(), [
+            'name'     => 'card_shadow_hover',
+            'selector' => '{{WRAPPER}} .absl-card:hover',
+        ]);
+
+        $this->end_controls_tab();
+
+        $this->end_controls_tabs();
+
         $this->add_responsive_control('card_radius', [
             'label' => __('Border Radius', 'absl-ew'),
             'type'  => Controls_Manager::SLIDER,
             'size_units' => ['px', '%'],
             'range' => ['px' => ['min'=>0, 'max'=>60], '%'=>['min'=>0, 'max'=>50]],
             'selectors' => ['{{WRAPPER}} .absl-card' => 'border-radius: {{SIZE}}{{UNIT}};'],
-        ]);
-
-        $this->add_group_control(Group_Control_Box_Shadow::get_type(), [
-            'name'     => 'card_shadow',
-            'selector' => '{{WRAPPER}} .absl-card',
         ]);
 
         $this->add_responsive_control('card_padding', [
@@ -427,6 +453,21 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             'label' => __('Icon Hover Color', 'absl-ew'),
             'type'  => Controls_Manager::COLOR,
             'selectors' => ['{{WRAPPER}} .absl-card:hover .absl-icon i, {{WRAPPER}} .absl-card:hover .absl-icon svg' => 'color: {{VALUE}}; fill: {{VALUE}};']
+        ]);
+        $this->add_control('icon_hover_animation', [
+            'label' => __('Icon Hover Animation', 'absl-ew'),
+            'type'  => Controls_Manager::SELECT,
+            'default' => 'none',
+            'options' => [
+                'none' => __('None', 'absl-ew'),
+                'scale(1.1)' => __('Zoom In', 'absl-ew'),
+                'scale(0.9)' => __('Zoom Out', 'absl-ew'),
+                'rotate(10deg)' => __('Rotate', 'absl-ew'),
+                'translateY(-6px)' => __('Float Up', 'absl-ew'),
+            ],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card:hover .absl-icon' => 'transform: {{VALUE}};',
+            ],
         ]);
 
         // Icon Background (Stacked)
@@ -936,6 +977,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             text-align:center;
             display:flex; flex-direction:column;
             position:relative;
+            box-sizing:border-box;
         }
         .absl-card.is-clickable{ cursor:pointer; }
 
