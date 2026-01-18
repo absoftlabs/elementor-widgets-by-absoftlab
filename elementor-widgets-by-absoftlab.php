@@ -5,7 +5,7 @@
  * Plugin URI:  https://absoftlab.com/elementor-widgets-by-absoftlab
  * Author:      absoftlab
  * Author URI:  https://absoftlab.com
- * Version:     1.8.1
+ * Version:     1.10.1
  * Text Domain: absl-ew
  */
 
@@ -100,6 +100,8 @@ function absl_ew_register_widgets($widgets_manager)
     require_once __DIR__ . '/widgets/course-accordion-widget.php';
     require_once __DIR__ . '/widgets/image-gallery-widget.php';
     require_once __DIR__ . '/widgets/accordion-widget.php';
+    require_once __DIR__ . '/widgets/tutor-course-card-widget.php';
+    require_once __DIR__ . '/widgets/advance-heading-widget.php';
 
     // রেজিস্টার করো
     $widgets_manager->register(new \ABSL_Info_Card_Widget());
@@ -111,6 +113,8 @@ function absl_ew_register_widgets($widgets_manager)
     $widgets_manager->register(new \ABSL_Course_Accordion_Widget());
     $widgets_manager->register(new \ABSL_Image_Gallery_Widget());
     $widgets_manager->register(new \ABSL_Accordion_Widget());
+    $widgets_manager->register(new \ABSL_Tutor_Course_Card_Widget());
+    $widgets_manager->register(new \ABSL_Advance_Heading_Widget());
 }
 add_action('elementor/widgets/register', 'absl_ew_register_widgets');
 
@@ -165,6 +169,13 @@ function absl_ew_register_assets()
     wp_register_style(
         'absl-accordion',
         plugins_url('assets/css/absl-accordion.css', __FILE__),
+        [],
+        '1.0.0'
+    );
+
+    wp_register_style(
+        'absl-tutor-course-card',
+        plugins_url('assets/css/absl-tutor-course-card.css', __FILE__),
         [],
         '1.0.0'
     );

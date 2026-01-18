@@ -88,6 +88,16 @@ class ABSL_Image_Gallery_Widget extends Widget_Base {
             'default' => 6,
         ]);
 
+        $this->add_control('load_mode', [
+            'label' => __('Image Load Mode', 'absl-ew'),
+            'type' => Controls_Manager::SELECT,
+            'default' => 'load_more',
+            'options' => [
+                'load_more' => __('Load More Button', 'absl-ew'),
+                'infinite'  => __('Infinite Scroll', 'absl-ew'),
+            ],
+        ]);
+
         $this->end_controls_section();
 
         /* ================= STYLE : FILTER TABS ================= */
@@ -319,6 +329,9 @@ class ABSL_Image_Gallery_Widget extends Widget_Base {
 
         $per = (int) $s['items_per_page'];
         $lightbox = ( $s['enable_lightbox'] === 'yes' ) ? 'yes' : 'no';
+        $load_mode = $s['load_mode'] ?? 'load_more';
+        $gallery_id = 'absl-gallery-' . $this->get_id();
+        $mode_cls = ($load_mode === 'infinite') ? ' absl-load-infinite' : '';
 
         $cat_counts = [];
         foreach ($s['items'] as $it) {
@@ -327,8 +340,9 @@ class ABSL_Image_Gallery_Widget extends Widget_Base {
         }
         ?>
 
-        <div class="absl-image-gallery"
+        <div class="absl-image-gallery<?php echo esc_attr($mode_cls); ?>"
              data-per-page="<?php echo esc_attr($per); ?>"
+             data-load-mode="<?php echo esc_attr($load_mode); ?>"
              data-hover="<?php echo esc_attr($s['hover_anim']); ?>"
              data-hover-speed="<?php echo esc_attr($s['hover_speed']); ?>"
              data-ul="<?php echo esc_attr($s['tab_underline']); ?>"
@@ -354,7 +368,14 @@ class ABSL_Image_Gallery_Widget extends Widget_Base {
                 ?>
                 <div class="absl-gallery-item" data-category="<?php echo esc_attr($cat); ?>">
                     <a href="<?php echo esc_url($item['image']['url']); ?>"
-                       data-elementor-open-lightbox="<?php echo esc_attr($lightbox); ?>">
+                       data-elementor-open-lightbox="<?php echo esc_attr($lightbox); ?>"
+                       <?php if ( $lightbox === 'yes' ) : ?>
+                       data-elementor-lightbox-type="image"
+                       data-elementor-lightbox-slideshow="<?php echo esc_attr($gallery_id); ?>"
+                       <?php if ( !empty($item['title']) ) : ?>
+                       data-elementor-lightbox-title="<?php echo esc_attr($item['title']); ?>"
+                       <?php endif; ?>
+                       <?php endif; ?>>
                         <img src="<?php echo esc_url($item['image']['url']); ?>" alt="">
                         <?php if ($item['title']): ?>
                             <div class="absl-overlay"><span><?php echo esc_html($item['title']); ?></span></div>
@@ -365,6 +386,7 @@ class ABSL_Image_Gallery_Widget extends Widget_Base {
             </div>
 
             <button class="absl-load-more"><?php esc_html_e('Load More','absl-ew'); ?></button>
+            <div class="absl-load-sentinel" aria-hidden="true"></div>
 
         </div>
         <?php

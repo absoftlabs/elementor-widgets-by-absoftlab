@@ -70,6 +70,38 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             ],
             'default' => 'top',
             'toggle'  => true,
+            'selectors_dictionary' => [
+                'top'   => 'column',
+                'left'  => 'row',
+                'right' => 'row-reverse',
+            ],
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-inner' => 'flex-direction: {{VALUE}};',
+            ],
+        ]);
+
+        $this->add_responsive_control('media_alignment', [
+            'label' => __('Media Alignment', 'absl-ew'),
+            'type' => Controls_Manager::CHOOSE,
+            'options' => [
+                'flex-start' => [
+                    'title' => __('Start', 'absl-ew'),
+                    'icon' => 'eicon-h-align-left',
+                ],
+                'center' => [
+                    'title' => __('Center', 'absl-ew'),
+                    'icon' => 'eicon-h-align-center',
+                ],
+                'flex-end' => [
+                    'title' => __('End', 'absl-ew'),
+                    'icon' => 'eicon-h-align-right',
+                ],
+            ],
+            'default' => 'center',
+            'selectors' => [
+                '{{WRAPPER}} .absl-card .absl-icon' => 'align-self: {{VALUE}};',
+                '{{WRAPPER}} .absl-card .absl-media' => 'align-self: {{VALUE}};',
+            ],
         ]);
 
         // Icon View
@@ -283,8 +315,6 @@ class ABSL_Info_Card_Widget extends Widget_Base {
                 '{{WRAPPER}} .absl-card' => 'text-align: {{VALUE}};',
                 '{{WRAPPER}} .absl-card p' => 'text-align: {{VALUE}};',
                 '{{WRAPPER}} .absl-card .absl-subtitle' => 'text-align: {{VALUE}};',
-                '{{WRAPPER}} .absl-card.pos-top .absl-top' => 'justify-content: {{VALUE}};',
-                '{{WRAPPER}} .absl-card.pos-left .absl-inner, {{WRAPPER}} .absl-card.pos-right .absl-inner' => 'justify-content: {{VALUE}};',
             ],
             'render_type' => 'ui',
         ]);
@@ -512,9 +542,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             'range' => ['px'=>['min'=>0,'max'=>100],'em'=>['min'=>0,'max'=>6]],
             'default' => ['size'=>16,'unit'=>'px'],
             'selectors' => [
-                '{{WRAPPER}} .absl-card.pos-top .absl-top'     => 'gap: {{SIZE}}{{UNIT}};',
-                '{{WRAPPER}} .absl-card.pos-left .absl-inner'  => 'gap: {{SIZE}}{{UNIT}};',
-                '{{WRAPPER}} .absl-card.pos-right .absl-inner' => 'gap: {{SIZE}}{{UNIT}};',
+                '{{WRAPPER}} .absl-card .absl-inner' => 'gap: {{SIZE}}{{UNIT}};',
             ],
         ]);
 
@@ -613,9 +641,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             'range' => ['px'=>['min'=>0,'max'=>100],'em'=>['min'=>0,'max'=>6]],
             'default' => ['size'=>16,'unit'=>'px'],
             'selectors' => [
-                '{{WRAPPER}} .absl-card.pos-top .absl-top'     => 'gap: {{SIZE}}{{UNIT}};',
-                '{{WRAPPER}} .absl-card.pos-left .absl-inner'  => 'gap: {{SIZE}}{{UNIT}};',
-                '{{WRAPPER}} .absl-card.pos-right .absl-inner' => 'gap: {{SIZE}}{{UNIT}};',
+                '{{WRAPPER}} .absl-card .absl-inner' => 'gap: {{SIZE}}{{UNIT}};',
             ],
         ]);
 
@@ -870,9 +896,6 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             elseif ( ($s['image_view'] ?? 'default') === 'framed' ) $img_view_cls = 'is-box is-framed';
         }
 
-        $pos = $s['icon_position'] ?: 'top';
-        $pos_cls = in_array($pos, ['left','right'], true) ? "pos-$pos" : 'pos-top';
-
         // Button link attrs
         $btn_url   = isset($s['button_link']['url']) ? esc_url($s['button_link']['url']) : '#';
         $btn_target= !empty($s['button_link']['is_external']) ? ' target="_blank"' : '';
@@ -920,11 +943,10 @@ class ABSL_Info_Card_Widget extends Widget_Base {
             );
         }
         ?>
-        <div class="absl-card <?php echo esc_attr($pos_cls . $card_extra_cls); ?>"<?php echo $card_attrs; ?>>
-            <?php if ($pos === 'top'): ?>
-                <div class="absl-top">
-                    <?php echo $media_html; ?>
-                </div>
+        <div class="absl-card <?php echo esc_attr($card_extra_cls); ?>"<?php echo $card_attrs; ?>>
+            <div class="absl-inner">
+                <?php echo $media_html; ?>
+
                 <div class="absl-content">
                     <h3><?php echo esc_html($s['title']); ?></h3>
                     <?php if ( ! empty( $s['subtitle'] ) ) : ?>
@@ -940,33 +962,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
                         </div>
                     <?php endif; ?>
                 </div>
-            <?php else: ?>
-                <div class="absl-inner">
-                    <?php if ($pos === 'left'): ?>
-                        <?php echo $media_html; ?>
-                    <?php endif; ?>
-
-                    <div class="absl-content">
-                        <h3><?php echo esc_html($s['title']); ?></h3>
-                        <?php if ( ! empty( $s['subtitle'] ) ) : ?>
-                            <div class="absl-subtitle"><?php echo esc_html($s['subtitle']); ?></div>
-                        <?php endif; ?>
-                        <p><?php echo esc_html($s['description']); ?></p>
-
-                        <?php if ( !empty($s['show_button']) && $s['show_button'] === 'yes' && !empty($s['button_text']) ) : ?>
-                            <div class="absl-btn-wrap">
-                                <a class="absl-btn<?php echo esc_attr($full_width); ?>" href="<?php echo $btn_url; ?>"<?php echo $btn_target . $btn_rel_attr; ?>>
-                                    <?php echo esc_html($s['button_text']); ?>
-                                </a>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-
-                    <?php if ($pos === 'right'): ?>
-                        <?php echo $media_html; ?>
-                    <?php endif; ?>
-                </div>
-            <?php endif; ?>
+            </div>
         </div>
 
         <style>
@@ -1010,10 +1006,7 @@ class ABSL_Info_Card_Widget extends Widget_Base {
         .absl-card p{ margin:0; line-height:1.6; transition:all .3s ease; }
 
         /* Layout by position */
-        .absl-card.pos-top .absl-top{ display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:12px; }
-        .absl-card.pos-left .absl-inner,
-        .absl-card.pos-right .absl-inner{ display:flex; align-items:center; gap:16px; }
-        .absl-card.pos-right .absl-inner{ flex-direction:row-reverse; }
+        .absl-card .absl-inner{ display:flex; flex-direction:column; align-items:center; gap:16px; }
 
         /* Let content area flex */
         .absl-card .absl-content{ flex:1 1 auto; width:100%; }
