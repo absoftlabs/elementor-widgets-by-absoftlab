@@ -132,6 +132,11 @@ class ABSL_Advance_Heading_Widget extends Widget_Base
             'default' => 'left',
         ]);
 
+        $this->add_group_control(Group_Control_Typography::get_type(), [
+            'name' => 'heading_global_typo',
+            'selector' => '{{WRAPPER}} .absl-adv-heading__text',
+        ]);
+
         $this->add_responsive_control('heading_gap', [
             'label' => __('Part Gap', 'absl-ew'),
             'type' => Controls_Manager::SLIDER,
@@ -541,12 +546,65 @@ class ABSL_Advance_Heading_Widget extends Widget_Base
         $this->end_controls_section();
     }
 
+    private function map_align_to_justify($align)
+    {
+        switch ($align) {
+            case 'center':
+                return 'center';
+            case 'right':
+                return 'flex-end';
+            case 'justify':
+                return 'space-between';
+            case 'left':
+            default:
+                return 'flex-start';
+        }
+    }
+
+    private function get_breakpoint_max($key, $fallback)
+    {
+        if (class_exists('\Elementor\Plugin')) {
+            $breakpoint = \Elementor\Plugin::$instance->breakpoints->get_active_breakpoints($key);
+            if ($breakpoint && method_exists($breakpoint, 'get_value')) {
+                $value = (int) $breakpoint->get_value();
+                if ($value > 0) {
+                    return $value;
+                }
+            }
+        }
+
+        return $fallback;
+    }
+
+    private function get_typo_size_value($value)
+    {
+        if (!is_array($value) || !array_key_exists('size', $value)) {
+            return '';
+        }
+
+        $size = $value['size'];
+        if ($size === '' || $size === null) {
+            return '';
+        }
+
+        $unit = !empty($value['unit']) ? $value['unit'] : 'px';
+        return $size . $unit;
+    }
+
     protected function render()
     {
         $s = $this->get_settings_for_display();
         $tag = !empty($s['heading_tag']) ? Utils::validate_html_tag($s['heading_tag']) : 'h2';
         $subtitle_tag = !empty($s['subtitle_tag']) ? Utils::validate_html_tag($s['subtitle_tag']) : 'p';
         $align = !empty($s['heading_align']) ? $s['heading_align'] : 'left';
+        $align_tablet = !empty($s['heading_align_tablet']) ? $s['heading_align_tablet'] : '';
+        $align_mobile = !empty($s['heading_align_mobile']) ? $s['heading_align_mobile'] : '';
+        $unique_class = 'absl-adv-heading-wrap--' . $this->get_id();
+        $tablet_breakpoint = $this->get_breakpoint_max('tablet', 1024);
+        $mobile_breakpoint = $this->get_breakpoint_max('mobile', 767);
+        $subtitle_font_size = $this->get_typo_size_value($s['subtitle_typo_font_size'] ?? null);
+        $subtitle_font_size_tablet = $this->get_typo_size_value($s['subtitle_typo_font_size_tablet'] ?? null);
+        $subtitle_font_size_mobile = $this->get_typo_size_value($s['subtitle_typo_font_size_mobile'] ?? null);
         $align_class = ' absl-adv-heading--align-' . esc_attr($align);
         $subtitle_pos = !empty($s['subtitle_position']) ? $s['subtitle_position'] : 'below';
         $subtitle_pos_class = $subtitle_pos === 'above' ? ' is-subtitle-above' : ' is-subtitle-below';
@@ -580,7 +638,7 @@ class ABSL_Advance_Heading_Widget extends Widget_Base
             return;
         }
         ?>
-        <div class="absl-adv-heading-wrap<?php echo $align_class . $subtitle_pos_class; ?>">
+        <div class="absl-adv-heading-wrap<?php echo $align_class . $subtitle_pos_class . ' ' . esc_attr($unique_class); ?>">
             <?php if ($subtitle_text !== '' && $subtitle_pos === 'above') : ?>
                 <<?php echo $subtitle_tag; ?> class="absl-adv-subtitle">
                     <?php echo esc_html($subtitle_text); ?>
@@ -655,6 +713,51 @@ class ABSL_Advance_Heading_Widget extends Widget_Base
         .absl-adv-heading-wrap.absl-adv-heading--align-justify .absl-adv-heading{
             justify-content:space-between;
         }
+        .absl-adv-heading-wrap.<?php echo esc_attr($unique_class); ?>{
+            text-align: <?php echo esc_attr($align); ?>;
+        }
+        .absl-adv-heading-wrap.<?php echo esc_attr($unique_class); ?> .absl-adv-heading{
+            justify-content: <?php echo esc_attr($this->map_align_to_justify($align)); ?>;
+        }
+        <?php if (!empty($align_tablet)) : ?>
+        @media (max-width: <?php echo (int) $tablet_breakpoint; ?>px){
+            .absl-adv-heading-wrap.<?php echo esc_attr($unique_class); ?>{
+                text-align: <?php echo esc_attr($align_tablet); ?> !important;
+            }
+            .absl-adv-heading-wrap.<?php echo esc_attr($unique_class); ?> .absl-adv-heading{
+                justify-content: <?php echo esc_attr($this->map_align_to_justify($align_tablet)); ?> !important;
+            }
+        }
+        <?php endif; ?>
+        <?php if (!empty($align_mobile)) : ?>
+        @media (max-width: <?php echo (int) $mobile_breakpoint; ?>px){
+            .absl-adv-heading-wrap.<?php echo esc_attr($unique_class); ?>{
+                text-align: <?php echo esc_attr($align_mobile); ?> !important;
+            }
+            .absl-adv-heading-wrap.<?php echo esc_attr($unique_class); ?> .absl-adv-heading{
+                justify-content: <?php echo esc_attr($this->map_align_to_justify($align_mobile)); ?> !important;
+            }
+        }
+        <?php endif; ?>
+        <?php if ($subtitle_font_size !== '') : ?>
+        .absl-adv-heading-wrap.<?php echo esc_attr($unique_class); ?> .absl-adv-subtitle{
+            font-size: <?php echo esc_attr($subtitle_font_size); ?> !important;
+        }
+        <?php endif; ?>
+        <?php if ($subtitle_font_size_tablet !== '') : ?>
+        @media (max-width: <?php echo (int) $tablet_breakpoint; ?>px){
+            .absl-adv-heading-wrap.<?php echo esc_attr($unique_class); ?> .absl-adv-subtitle{
+                font-size: <?php echo esc_attr($subtitle_font_size_tablet); ?> !important;
+            }
+        }
+        <?php endif; ?>
+        <?php if ($subtitle_font_size_mobile !== '') : ?>
+        @media (max-width: <?php echo (int) $mobile_breakpoint; ?>px){
+            .absl-adv-heading-wrap.<?php echo esc_attr($unique_class); ?> .absl-adv-subtitle{
+                font-size: <?php echo esc_attr($subtitle_font_size_mobile); ?> !important;
+            }
+        }
+        <?php endif; ?>
         .absl-adv-heading__part{
             display:inline-block;
             animation-duration: var(--absl-motion-duration, 2400ms);
