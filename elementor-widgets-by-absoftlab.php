@@ -5,7 +5,7 @@
  * Plugin URI:  https://absoftlab.com/elementor-widgets-by-absoftlab
  * Author:      absoftlab
  * Author URI:  https://absoftlab.com
- * Version:     1.10.2
+ * Version:     2.1.1
  * Text Domain: absl-ew
  */
 
@@ -102,6 +102,7 @@ function absl_ew_register_widgets($widgets_manager)
     require_once __DIR__ . '/widgets/accordion-widget.php';
     require_once __DIR__ . '/widgets/tutor-course-card-widget.php';
     require_once __DIR__ . '/widgets/advance-heading-widget.php';
+    require_once __DIR__ . '/widgets/blog-tabs-widget.php';
 
     // রেজিস্টার করো
     $widgets_manager->register(new \ABSL_Info_Card_Widget());
@@ -115,6 +116,7 @@ function absl_ew_register_widgets($widgets_manager)
     $widgets_manager->register(new \ABSL_Accordion_Widget());
     $widgets_manager->register(new \ABSL_Tutor_Course_Card_Widget());
     $widgets_manager->register(new \ABSL_Advance_Heading_Widget());
+    $widgets_manager->register(new \ABSL_Blog_Tabs_Widget());
 }
 add_action('elementor/widgets/register', 'absl_ew_register_widgets');
 
@@ -180,6 +182,13 @@ function absl_ew_register_assets()
         '1.0.0'
     );
 
+    wp_register_style(
+        'absl-blog-tabs',
+        plugins_url('assets/css/absl-blog-tabs.css', __FILE__),
+        [],
+        '1.0.0'
+    );
+
     wp_register_script(
         'absl-motion-gallery',
         plugins_url('assets/js/absl-motion-gallery.js', __FILE__),
@@ -227,6 +236,18 @@ function absl_ew_register_assets()
         '1.0.0',
         true
     );
+
+    wp_register_script(
+        'absl-blog-tabs',
+        plugins_url('assets/js/absl-blog-tabs.js', __FILE__),
+        ['jquery', 'elementor-frontend'],
+        '1.0.0',
+        true
+    );
+
+    wp_localize_script('absl-blog-tabs', 'abslBlogTabs', [
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+    ]);
 
 }
 
