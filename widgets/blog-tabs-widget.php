@@ -845,6 +845,12 @@ class ABSL_Blog_Tabs_Widget extends Widget_Base {
     }
 
     protected function render() {
+        if (function_exists('absl_ew_register_assets')) {
+            absl_ew_register_assets();
+        }
+        wp_enqueue_style('absl-blog-tabs');
+        wp_enqueue_script('absl-blog-tabs');
+
         $s = $this->get_settings_for_display();
 
         $cats = ! empty($s['categories']) ? array_map('intval', $s['categories']) : [];
@@ -896,6 +902,7 @@ class ABSL_Blog_Tabs_Widget extends Widget_Base {
         $meta_icon_value = self::get_meta_icon_size_value($s);
         $meta_icon_var_style = self::get_meta_icon_var_style($meta_icon_value);
         $nonce = wp_create_nonce('absl_blog_tabs');
+        $use_ajax = apply_filters('absl_blog_tabs_use_ajax', false, $s, $this);
         ?>
 
         <div class="<?php echo esc_attr($wrapper_class); ?>"
@@ -904,7 +911,7 @@ class ABSL_Blog_Tabs_Widget extends Widget_Base {
              data-max-posts="<?php echo esc_attr($max_posts); ?>"
              data-pagination="<?php echo esc_attr($s['enable_pagination']); ?>"
              data-default-tab="<?php echo esc_attr($default_filter); ?>"
-             data-ajax="yes"
+             data-ajax="<?php echo $use_ajax ? 'yes' : 'no'; ?>"
              data-ajax-nonce="<?php echo esc_attr($nonce); ?>"
              data-orderby="<?php echo esc_attr($orderby); ?>"
              data-order="<?php echo esc_attr($order); ?>"

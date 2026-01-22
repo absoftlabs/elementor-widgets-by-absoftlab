@@ -39,6 +39,9 @@
             var ajaxUrl = (window.abslBlogTabs && abslBlogTabs.ajaxUrl) ? abslBlogTabs.ajaxUrl : '';
             var useAjax = String($wrap.data('ajax')) === 'yes' && ajaxUrl;
             var nonce = $wrap.data('ajax-nonce') || '';
+            if (!nonce) {
+                useAjax = false;
+            }
 
             function getAttr(name, fallback) {
                 var val = $wrap.attr('data-' + name);
@@ -109,6 +112,13 @@
                 $pagination.append(addPageButton('Next', 'next', false, currentPage === totalPages));
             }
 
+            function fallbackToLocal() {
+                if (useAjax) {
+                    useAjax = false;
+                    updateView();
+                }
+            }
+
             function updateFromAjax() {
                 if (!useAjax) {
                     return false;
@@ -166,7 +176,11 @@
                             $grid.html('<div class="absl-blog-empty">' + emptyText + '</div>');
                         }
                         renderPagination(totalPages);
+                    } else {
+                        fallbackToLocal();
                     }
+                }).fail(function () {
+                    fallbackToLocal();
                 }).always(function () {
                     $wrap.removeClass('absl-loading');
                 });
