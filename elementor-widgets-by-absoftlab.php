@@ -103,6 +103,7 @@ function absl_ew_register_widgets($widgets_manager)
     require_once __DIR__ . '/widgets/tutor-course-card-widget.php';
     require_once __DIR__ . '/widgets/advance-heading-widget.php';
     require_once __DIR__ . '/widgets/blog-tabs-widget.php';
+    require_once __DIR__ . '/widgets/single-blog-page-widget.php';
 
     // রেজিস্টার করো
     $widgets_manager->register(new \ABSL_Info_Card_Widget());
@@ -117,6 +118,7 @@ function absl_ew_register_widgets($widgets_manager)
     $widgets_manager->register(new \ABSL_Tutor_Course_Card_Widget());
     $widgets_manager->register(new \ABSL_Advance_Heading_Widget());
     $widgets_manager->register(new \ABSL_Blog_Tabs_Widget());
+    $widgets_manager->register(new \ABSL_Single_Blog_Page_Widget());
 }
 add_action('elementor/widgets/register', 'absl_ew_register_widgets');
 
@@ -185,6 +187,13 @@ function absl_ew_register_assets()
     wp_register_style(
         'absl-blog-tabs',
         plugins_url('assets/css/absl-blog-tabs.css', __FILE__),
+        [],
+        '1.0.0'
+    );
+
+    wp_register_style(
+        'absl-single-blog-page',
+        plugins_url('assets/css/absl-single-blog-page.css', __FILE__),
         [],
         '1.0.0'
     );
