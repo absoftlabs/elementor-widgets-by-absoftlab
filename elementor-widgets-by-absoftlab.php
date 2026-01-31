@@ -5,7 +5,7 @@
  * Plugin URI:  https://absoftlab.com/elementor-widgets-by-absoftlab
  * Author:      absoftlab
  * Author URI:  https://absoftlab.com
- * Version:     2.1.2
+ * Version:     2.1.8
  * Text Domain: absl-ew
  */
 
@@ -104,6 +104,7 @@ function absl_ew_register_widgets($widgets_manager)
     require_once __DIR__ . '/widgets/advance-heading-widget.php';
     require_once __DIR__ . '/widgets/blog-tabs-widget.php';
     require_once __DIR__ . '/widgets/single-blog-page-widget.php';
+    require_once __DIR__ . '/widgets/countdown-timer-widget.php';
 
     // রেজিস্টার করো
     $widgets_manager->register(new \ABSL_Info_Card_Widget());
@@ -119,6 +120,7 @@ function absl_ew_register_widgets($widgets_manager)
     $widgets_manager->register(new \ABSL_Advance_Heading_Widget());
     $widgets_manager->register(new \ABSL_Blog_Tabs_Widget());
     $widgets_manager->register(new \ABSL_Single_Blog_Page_Widget());
+    $widgets_manager->register(new \ABSL_Countdown_Timer_Widget());
 }
 add_action('elementor/widgets/register', 'absl_ew_register_widgets');
 
@@ -198,6 +200,15 @@ function absl_ew_register_assets()
         '1.0.0'
     );
 
+    wp_register_style(
+        'absl-countdown-timer',
+        plugins_url('assets/css/absl-countdown-timer.css', __FILE__),
+        [],
+        (file_exists(__DIR__ . '/assets/css/absl-countdown-timer.css')
+            ? filemtime(__DIR__ . '/assets/css/absl-countdown-timer.css')
+            : '1.0.0')
+    );
+
     wp_register_script(
         'absl-motion-gallery',
         plugins_url('assets/js/absl-motion-gallery.js', __FILE__),
@@ -251,6 +262,16 @@ function absl_ew_register_assets()
         plugins_url('assets/js/absl-blog-tabs.js', __FILE__),
         ['jquery', 'elementor-frontend'],
         '1.0.0',
+        true
+    );
+
+    wp_register_script(
+        'absl-countdown-timer',
+        plugins_url('assets/js/absl-countdown-timer.js', __FILE__),
+        ['jquery', 'elementor-frontend'],
+        (file_exists(__DIR__ . '/assets/js/absl-countdown-timer.js')
+            ? filemtime(__DIR__ . '/assets/js/absl-countdown-timer.js')
+            : '1.0.0'),
         true
     );
 

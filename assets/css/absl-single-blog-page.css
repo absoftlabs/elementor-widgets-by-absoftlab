@@ -240,6 +240,88 @@
     line-height: 1.6;
 }
 
+#wp-comment-cookies-consent label{
+    color: white;
+}
+
+.absl-sb-comments {
+    margin-top: 20px;
+    padding: 22px;
+    gap: 16px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.absl-sb-comments-header {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.absl-sb-comments .comment-form {
+    display: grid;
+    gap: 10px;
+}
+
+.absl-sb-comments .comment-form p {
+    margin: 0;
+}
+
+.absl-sb-comments .logged-in-as,
+.absl-sb-comments .comment-notes,
+.absl-sb-comments .comment-form-cookies-consent {
+    margin: 0;
+    padding: 0;
+    color: var(--absl-sb-muted);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.absl-sb-comments input[type="text"],
+.absl-sb-comments input[type="email"],
+.absl-sb-comments textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(7, 10, 14, 0.7);
+    color: var(--absl-sb-text);
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.absl-sb-comments textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.absl-sb-comment-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: none;
+    background: var(--absl-sb-accent);
+    color: #0b0f15;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.absl-sb-comment-submit:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 18px rgba(255, 138, 61, 0.3);
+}
+
+.absl-sb-comments-closed {
+    margin: 0;
+    color: var(--absl-sb-muted);
+}
+
 .absl-sb-back {
     display: inline-flex;
     align-items: center;

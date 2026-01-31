@@ -354,6 +354,39 @@ class ABSL_Single_Blog_Page_Widget extends Widget_Base
                 </div>
             <?php endif; ?>
 
+            <div class="absl-sb-card absl-sb-comments">
+                <div class="absl-sb-comments-header">
+                    <?php esc_html_e('Leave a comment', 'absl-ew'); ?>
+                </div>
+                <?php
+                if (comments_open($post_id)) {
+                    comment_form([
+                        'title_reply' => '',
+                        'label_submit' => __('Post Comment', 'absl-ew'),
+                        'comment_notes_before' => '',
+                        'comment_notes_after' => '',
+                        'class_submit' => 'absl-sb-comment-submit',
+                        'comment_field' =>
+                            '<textarea id="comment" name="comment" rows="5" required="required" placeholder="' .
+                            esc_attr__('Write your comment...', 'absl-ew') .
+                            '"></textarea>',
+                        'fields' => [
+                            'author' =>
+                                '<input id="author" name="author" type="text" required="required" placeholder="' .
+                                esc_attr__('Your name', 'absl-ew') .
+                                '">',
+                            'email' =>
+                                '<input id="email" name="email" type="email" required="required" placeholder="' .
+                                esc_attr__('Your email', 'absl-ew') .
+                                '">',
+                        ],
+                    ], $post_id);
+                } else {
+                    echo '<p class="absl-sb-comments-closed">' . esc_html__('Comments are closed.', 'absl-ew') . '</p>';
+                }
+                ?>
+            </div>
+
             <?php if (($s['show_back_link'] ?? 'yes') === 'yes') : ?>
                 <?php
                 $back_url = $s['back_link_url']['url'] ?? '';
